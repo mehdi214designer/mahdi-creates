@@ -1,0 +1,27 @@
+{
+  "startUrl": "https://YOUR-SITE.framer.website",
+
+  "outDir": "out",
+
+  "assetBaseUrl": "/wp-content/uploads/framer-mirror",
+
+  "selfHostUserContent": false,
+
+  "maxPages": 200,
+
+  "waitMs": 1500,
+
+  "viewport": { "width": 1440, "height": 900 },
+
+  "extraRoutes": [],
+
+  "_docs": {
+    "startUrl": "Your published Framer URL (free *.framer.website works).",
+    "outDir": "Where the static mirror is written (relative to this folder).",
+    "assetBaseUrl": "URL prefix under which same-origin assets are served by WordPress. Default matches wp-content/uploads/framer-mirror.",
+    "selfHostUserContent": "If true, also download images/fonts from framerusercontent.com and rewrite them locally (fully self-contained, but heavier). If false, those stream from Framer's CDN. Framer's runtime JS (framerstatic.com) is always kept absolute because it constructs chunk URLs at runtime.",
+    "maxPages": "Safety cap on number of pages crawled.",
+    "waitMs": "Extra settle time per page after network idle (for animations/lazy content).",
+    "extraRoutes": ["Optional list of absolute URLs to force-capture if the sitemap misses them."]
+  }
+}

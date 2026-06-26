@@ -1,0 +1,13 @@
+{
+  "name": "framer-capture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Mirror a published Framer site into a static folder for self-hosting.",
+  "scripts": {
+    "capture": "node capture.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}
