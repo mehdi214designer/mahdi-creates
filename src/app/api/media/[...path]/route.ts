@@ -50,14 +50,9 @@ export async function GET(
     req.on('response', (headers) => {
       const status = headers[':status'] as number;
       if (status !== 200) {
+        const loc = headers['location'] as string | undefined;
         client.close();
-        resolve(new Response(`upstream-${status}`, { status: 404 }));
-        return;
-      }
-
-      if (status === 301 || status === 302) {
-        client.close();
-        resolve(new Response(`redirect-to: ${headers['location']}`, { status: 404 }));
+        resolve(new Response(loc ? `redirect-to:${loc}` : `upstream-${status}`, { status: 404 }));
         return;
       }
       const chunks: Buffer[] = [];
