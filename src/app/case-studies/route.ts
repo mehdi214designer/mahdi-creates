@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
+import { applyNavFix } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
@@ -85,7 +86,7 @@ export async function GET() {
     // serve static fallback on fetch error
   }
 
-  return new Response(html, {
+  return new Response(applyNavFix(html), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
