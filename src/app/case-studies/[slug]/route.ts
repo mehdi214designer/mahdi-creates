@@ -37,7 +37,9 @@ function buildPlaceholderImg(title: string): string {
 }
 
 function rewriteWpUrls(html: string): string {
-  return html.replace(/https:\/\/mahdicreates\.com\/wp-content\//g, 'https://cms.mahdicreates.com/wp-content/');
+  return html
+    .replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
+    .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
 }
 
 function buildArticle(post: WPPost): string {

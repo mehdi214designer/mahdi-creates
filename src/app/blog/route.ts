@@ -32,11 +32,17 @@ function buildPlaceholderImg(title: string): string {
   return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450'%3E%3Crect width='600' height='450' fill='%230d0500'/%3E%3Ctext x='300' y='235' font-family='sans-serif' font-size='11' fill='rgba(255%2C255%2C255%2C0.22)' text-anchor='middle' letter-spacing='4'%3E${t}%3C/text%3E%3C/svg%3E`;
 }
 
+function proxyUrl(url: string): string {
+  return url
+    .replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
+    .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+}
+
 function buildGrid(posts: WPPost[]): string {
   const delays = [0, 60, 120, 0, 60, 120];
   const cards = posts.map((post, i) => {
     const img = post._embedded?.['wp:featuredmedia']?.[0];
-    const src = img?.source_url ?? buildPlaceholderImg(post.title.rendered);
+    const src = proxyUrl(img?.source_url ?? buildPlaceholderImg(post.title.rendered));
     const alt = img?.alt_text || post.title.rendered;
     const delay = delays[i % delays.length];
     return `    <a href="/blog/${post.slug}" class="mc-card" data-mc-appear="mc-fade-up" data-mc-delay="${delay}">

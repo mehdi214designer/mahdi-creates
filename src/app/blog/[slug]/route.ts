@@ -36,12 +36,19 @@ function buildPlaceholderImg(title: string): string {
   return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500'%3E%3Crect width='800' height='500' fill='%231a0800'/%3E%3Ctext x='400' y='270' font-family='sans-serif' font-size='38' font-weight='700' fill='rgba(255%2C255%2C255%2C0.12)' text-anchor='middle'%3E${t}%3C/text%3E%3C/svg%3E`;
 }
 
+function rewriteWpUrls(html: string): string {
+  return html
+    .replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
+    .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+}
+
 function buildArticle(post: WPPost): string {
   const img = post._embedded?.['wp:featuredmedia']?.[0];
-  const coverSrc = img?.source_url ?? buildPlaceholderImg(post.title.rendered);
+  const coverSrc = rewriteWpUrls(img?.source_url ?? buildPlaceholderImg(post.title.rendered));
   const coverAlt = img?.alt_text || post.title.rendered;
   const cats = post._embedded?.['wp:term']?.[0] ?? [];
   const category = cats[0]?.name ?? 'Design';
+  const content = rewriteWpUrls(post.content.rendered);
 
   return `<!-- MC_POST_START -->
   <article>
@@ -56,7 +63,7 @@ function buildArticle(post: WPPost): string {
     </header>
     <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" data-mc-appear="mc-fade-up" data-mc-delay="0">
     <div class="mc-a-body">
-      ${post.content.rendered}
+      ${content}
     </div>
   </article>
 <!-- MC_POST_END -->`;
@@ -65,7 +72,7 @@ function buildArticle(post: WPPost): string {
 function buildRelated(posts: WPPost[]): string {
   const cards = posts.slice(0, 3).map((p, i) => {
     const img = p._embedded?.['wp:featuredmedia']?.[0];
-    const src = img?.source_url ?? buildPlaceholderImg(p.title.rendered);
+    const src = rewriteWpUrls(img?.source_url ?? buildPlaceholderImg(p.title.rendered));
     const cats = p._embedded?.['wp:term']?.[0] ?? [];
     const cat = cats[0]?.name ?? 'Design';
     return `      <a href="/blog/${p.slug}" class="mc-card" data-mc-appear="mc-fade-up" data-mc-delay="${i * 80}">

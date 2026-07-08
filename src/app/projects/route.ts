@@ -33,8 +33,11 @@ function buildSection(posts: WPPost[]): string {
     const excerpt = stripTags(post.excerpt.rendered).slice(0, 140);
     const delay = delays[i % delays.length];
 
-    const imageHtml = img
-      ? `<div class="mc-cs-img-wrap"><img class="mc-cs-img" src="${img.source_url}" alt="${img.alt_text || post.title.rendered}" loading="lazy"></div>`
+    const imgSrc = img?.source_url
+      ?.replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
+      .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+    const imageHtml = imgSrc
+      ? `<div class="mc-cs-img-wrap"><img class="mc-cs-img" src="${imgSrc}" alt="${img?.alt_text || post.title.rendered}" loading="lazy"></div>`
       : `<div class="mc-cs-placeholder" style="background:linear-gradient(135deg,#0d0500,#1a0a00)"><span style="font-size:11px;letter-spacing:.1em;color:rgba(255,255,255,.2);font-family:sans-serif;text-transform:uppercase">${category}</span></div>`;
 
     return `    <a href="/projects/${post.slug}" class="mc-cs-card" data-mc-appear="mc-fade-up" data-mc-delay="${delay}">
