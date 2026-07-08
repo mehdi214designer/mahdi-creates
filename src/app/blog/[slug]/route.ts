@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { NextRequest } from 'next/server';
 
-const WP_API = 'https://mahdicreates.com/wp-json/wp/v2';
+const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
 interface WPPost {
   id: number;
