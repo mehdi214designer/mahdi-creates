@@ -50,62 +50,34 @@ function buildSection(posts: WPPost[]): string {
 
   return `<!-- MC_PROJECTS_SECTION_START -->
 <style>
-.mc-ph-section{width:100%;padding:80px 0 120px;background:transparent}
-.mc-ph-header{max-width:1200px;margin:0 auto 60px;padding:0 40px}
-.mc-ph-header-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#ff6522;margin-bottom:16px}
-.mc-ph-header h2{font-size:clamp(32px,4vw,52px);font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px}
-.mc-ph-header p{font-size:16px;color:rgba(255,255,255,.5);max-width:480px}
+.mc-ph-section{width:100%;padding:60px 0 100px;background:rgb(18,18,18)}
+.mc-ph-header{max-width:1200px;margin:0 auto 48px;padding:0 40px}
+.mc-ph-header-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#ff6522;margin-bottom:12px}
+.mc-ph-header h2{font-size:clamp(28px,3.5vw,44px);font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.02em}
 .mc-ph-cards{max-width:1200px;margin:0 auto;padding:0 40px;display:flex;flex-direction:column;gap:0}
 .mc-ph-card{display:grid;grid-template-columns:1fr 380px;gap:0;text-decoration:none;border-top:1px solid rgba(255,255,255,.08);padding:48px 0;transition:opacity .2s}
 .mc-ph-card:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
-.mc-ph-card:hover{opacity:.85}
-.mc-ph-img-wrap{border-radius:16px;overflow:hidden;background:#111;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.mc-ph-card:hover{opacity:.8}
+.mc-ph-img-wrap{border-radius:12px;overflow:hidden;background:#111;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
 .mc-ph-img{width:100%;height:100%;object-fit:cover;display:block}
-.mc-ph-img-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1a0a00,#2a1200);display:flex;align-items:center;justify-content:center;border-radius:16px}
-.mc-ph-img-placeholder span{font-size:48px;font-weight:800;color:rgba(255,255,255,.08);font-family:sans-serif}
+.mc-ph-img-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1a0a00,#2a1200);display:flex;align-items:center;justify-content:center;border-radius:12px}
+.mc-ph-img-placeholder span{font-size:42px;font-weight:800;color:rgba(255,255,255,.07);font-family:sans-serif}
 .mc-ph-info{padding:0 0 0 48px;display:flex;flex-direction:column;justify-content:center}
-.mc-ph-title{font-size:clamp(24px,3vw,38px);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.02em;margin-bottom:20px}
-.mc-ph-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.5);margin-bottom:28px;flex:1}
+.mc-ph-title{font-size:clamp(22px,2.5vw,34px);font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.02em;margin-bottom:16px}
+.mc-ph-desc{font-size:15px;line-height:1.65;color:rgba(255,255,255,.5);margin-bottom:24px;flex:1}
 .mc-ph-tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,.35)}
 .mc-ph-divider{margin:0 4px;color:rgba(255,255,255,.2)}
 @media(max-width:900px){.mc-ph-card{grid-template-columns:1fr}.mc-ph-info{padding:24px 0 0}}
 </style>
 <div id="mc-projects-wp" class="mc-ph-section">
   <div class="mc-ph-header">
-    <div class="mc-ph-header-label">Portfolio</div>
-    <h2>Projects Highlight</h2>
-    <p>A glimpse into some of my favorite projects — where design meets functionality, and every pixel serves a purpose.</p>
+    <div class="mc-ph-header-label">From WordPress CMS</div>
+    <h2>More Projects</h2>
   </div>
   <div class="mc-ph-cards">
 ${cards}
   </div>
 </div>
-<script>
-(function(){
-  var done = false;
-  var obs;
-  function inject(){
-    if(done) return;
-    var mc = document.getElementById('mc-projects-wp');
-    var target = document.querySelector('.framer-eg45ct');
-    if(!mc || !target) return;
-    target.style.setProperty('display','none','important');
-    var parent = target.parentElement;
-    if(parent){
-      parent.insertBefore(mc, target);
-      done = true;
-      if(obs) obs.disconnect();
-    }
-  }
-  inject();
-  setTimeout(inject, 200);
-  setTimeout(inject, 600);
-  setTimeout(inject, 1200);
-  obs = new MutationObserver(inject);
-  obs.observe(document.body, {childList:true, subtree:true});
-  window.addEventListener('load', inject);
-})();
-</script>
 <!-- MC_PROJECTS_SECTION_END -->`;
 }
 
