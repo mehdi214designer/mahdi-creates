@@ -37,7 +37,7 @@ export async function GET(
 
     const proxyReq = https.request(options, (res) => {
       if (res.statusCode !== 200) {
-        resolve(new Response('Not Found', { status: 404 }));
+        resolve(new Response(`upstream-${res.statusCode}`, { status: 404 }));
         return;
       }
 
@@ -58,7 +58,7 @@ export async function GET(
 
     proxyReq.on('error', (err) => {
       console.error('[media-proxy] error:', err.message);
-      resolve(new Response('Not Found', { status: 404 }));
+      resolve(new Response(`proxy-error: ${err.message}`, { status: 502 }));
     });
     proxyReq.end();
   });
