@@ -36,13 +36,13 @@ export async function GET(
       createConnection: makeConnection,
     });
 
-    client.on('error', (err) => {
-      resolve(new Response(`connect-error: ${err.message}`, { status: 502 }));
+    client.on('error', () => {
+      resolve(new Response('Not Found', { status: 404 }));
     });
 
     const req = client.request({
       ':method': 'GET',
-      ':path': `/wp-content/uploads/${filePath}`,
+      ':path': `/wp-content/${filePath}`,
       accept: 'image/*,*/*',
       'user-agent': 'MahdiCreates-Proxy/1.0',
     });
@@ -50,9 +50,8 @@ export async function GET(
     req.on('response', (headers) => {
       const status = headers[':status'] as number;
       if (status !== 200) {
-        const loc = headers['location'] as string | undefined;
         client.close();
-        resolve(new Response(loc ? `redirect-to:${loc}` : `upstream-${status}`, { status: 404 }));
+        resolve(new Response('Not Found', { status: 404 }));
         return;
       }
       const chunks: Buffer[] = [];
@@ -71,9 +70,9 @@ export async function GET(
       });
     });
 
-    req.on('error', (err) => {
+    req.on('error', () => {
       client.close();
-      resolve(new Response(`req-error: ${err.message}`, { status: 502 }));
+      resolve(new Response('Not Found', { status: 404 }));
     });
 
     req.end();
