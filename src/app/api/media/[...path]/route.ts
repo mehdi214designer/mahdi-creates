@@ -1,14 +1,25 @@
 import { NextRequest } from 'next/server';
 import http2 from 'http2';
+import tls from 'tls';
 
 export const dynamic = 'force-dynamic';
 
 // Proxy WordPress media files from Hostinger server.
-// cms.mahdicreates.com/.htaccess routes all requests through WordPress PHP,
-// so static upload files 404. The files physically exist under mahdicreates.com
-// document root on the same server (same IP as cms.mahdicreates.com).
-// LiteSpeed routes by :authority pseudo-header (HTTP/2) / SNI, not Host.
-// We use HTTP/2 and set :authority to mahdicreates.com to hit the correct vhost.
+// cms.mahdicreates.com/.htaccess is broken (no static-file exemption), so
+// all requests through that vhost get 404 from WordPress PHP.
+// The files exist on the same physical server under the mahdicreates.com vhost.
+// We dial the raw IP (82.29.189.188) with TLS SNI = mahdicreates.com so
+// LiteSpeed routes to the correct vhost, matching curl --resolve behaviour.
+function makeConnection() {
+  return tls.connect({
+    host: '82.29.189.188',
+    port: 443,
+    servername: 'mahdicreates.com',
+    rejectUnauthorized: true,
+    ALPNProtocols: ['h2', 'http/1.1'],
+  });
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -21,10 +32,8 @@ export async function GET(
   }
 
   return new Promise<Response>((resolve) => {
-    // Connect to cms.mahdicreates.com (valid TLS cert) but override :authority
-    // to mahdicreates.com so LiteSpeed routes to the correct vhost.
-    const client = http2.connect('https://cms.mahdicreates.com', {
-      rejectUnauthorized: true,
+    const client = http2.connect('https://mahdicreates.com', {
+      createConnection: makeConnection,
     });
 
     client.on('error', (err) => {
@@ -34,9 +43,7 @@ export async function GET(
     const req = client.request({
       ':method': 'GET',
       ':path': `/wp-content/uploads/${filePath}`,
-      ':authority': 'mahdicreates.com',
-      ':scheme': 'https',
-      'accept': 'image/*,*/*',
+      accept: 'image/*,*/*',
       'user-agent': 'MahdiCreates-Proxy/1.0',
     });
 
