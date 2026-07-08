@@ -55,6 +55,11 @@ export async function GET(
         return;
       }
 
+      if (status === 301 || status === 302) {
+        client.close();
+        resolve(new Response(`redirect-to: ${headers['location']}`, { status: 404 }));
+        return;
+      }
       const chunks: Buffer[] = [];
       req.on('data', (chunk: Buffer) => chunks.push(chunk));
       req.on('end', () => {
