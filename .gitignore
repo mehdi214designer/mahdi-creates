@@ -2,6 +2,10 @@
 
 # dependencies
 /node_modules
+**/node_modules
+
+# captured output
+framer-to-wordpress/capture/out/
 /.pnp
 .pnp.*
 .yarn/*
