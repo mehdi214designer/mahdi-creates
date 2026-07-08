@@ -105,7 +105,7 @@ export async function GET() {
   try {
     const res = await fetch(
       `${WP_API}/mc_resource?per_page=50&_embed=wp:featuredmedia,wp:term&_fields=id,slug,title,content,excerpt,featured_media,_links`,
-      { next: { revalidate: 300 } }
+      { cache: 'no-store' }
     );
 
     if (res.ok) {

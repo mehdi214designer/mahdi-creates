@@ -67,7 +67,7 @@ export async function GET() {
   try {
     const res = await fetch(
       `${WP_API}/posts?per_page=12&_embed=wp:featuredmedia&_fields=id,slug,date,title,excerpt,featured_media,_links`,
-      { next: { revalidate: 300 } }
+      { cache: 'no-store' }
     );
 
     if (res.ok) {

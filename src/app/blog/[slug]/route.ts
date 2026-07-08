@@ -105,7 +105,7 @@ export async function GET(
   try {
     const res = await fetch(
       `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,excerpt,featured_media,_links`,
-      { next: { revalidate: 300 } }
+      { cache: 'no-store' }
     );
 
     if (!res.ok) throw new Error('fetch failed');
@@ -132,7 +132,7 @@ export async function GET(
     // Fetch related posts (exclude current)
     const relRes = await fetch(
       `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,
-      { next: { revalidate: 300 } }
+      { cache: 'no-store' }
     );
     if (relRes.ok) {
       const related: WPPost[] = await relRes.json();
