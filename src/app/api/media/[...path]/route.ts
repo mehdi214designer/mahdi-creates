@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 // Proxy WordPress media files from Hostinger server.
 // cms.mahdicreates.com/.htaccess routes all requests through WordPress PHP,
 // so static upload files 404. The files physically exist under mahdicreates.com
-// document root on the Hostinger server (82.29.189.188), accessible with
-// Host: mahdicreates.com. This proxy bridges the gap until the server .htaccess
-// is repaired.
+// document root on the Hostinger server, accessible by connecting to
+// cms.mahdicreates.com (same IP) but sending Host: mahdicreates.com to use
+// the correct vhost which has proper static file handling.
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -23,17 +23,16 @@ export async function GET(
 
   return new Promise<Response>((resolve) => {
     const options: https.RequestOptions = {
-      hostname: '82.29.189.188',
+      hostname: 'cms.mahdicreates.com',
       port: 443,
       path: `/wp-content/uploads/${filePath}`,
       method: 'GET',
       headers: {
+        // Use mahdicreates.com vhost which has proper static file handling
         Host: 'mahdicreates.com',
         Accept: 'image/*,*/*',
         'User-Agent': 'MahdiCreates-Proxy/1.0',
       },
-      // cert is issued for the domain name, not this IP
-      rejectUnauthorized: false,
     };
 
     const proxyReq = https.request(options, (res) => {
@@ -57,7 +56,10 @@ export async function GET(
       });
     });
 
-    proxyReq.on('error', () => resolve(new Response('Not Found', { status: 404 })));
+    proxyReq.on('error', (err) => {
+      console.error('[media-proxy] error:', err.message);
+      resolve(new Response('Not Found', { status: 404 }));
+    });
     proxyReq.end();
   });
 }
