@@ -344,6 +344,42 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 .mc-card-title{font-family:"Zalando Sans Expanded","Zalando Sans Expanded Placeholder",sans-serif;
   font-size:15px;font-weight:700;line-height:132%;letter-spacing:-.01em;color:rgba(255,255,255,.86);transition:color .2s}
 .mc-card:hover .mc-card-title{color:#ff6522}
+
+/* ── Resource cards ──────────────────────────────── */
+.mc-res-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+.mc-res-filter{font-family:"Zalando Sans Expanded","Zalando Sans Expanded Placeholder",sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,.15);
+  background:transparent;color:rgba(255,255,255,.42);cursor:pointer;transition:all .2s}
+.mc-res-filter:hover{border-color:rgba(255,255,255,.35);color:rgba(255,255,255,.7)}
+.mc-res-filter.active{background:#ff6522;border-color:#ff6522;color:#fff}
+
+.mc-res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:0}
+@media(max-width:900px){.mc-res-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.mc-res-grid{grid-template-columns:1fr}}
+
+.mc-res-card{text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:16px;padding:20px;transition:border-color .2s,background .2s;cursor:pointer}
+.mc-res-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,102,34,.35)}
+
+.mc-res-icon{width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;flex-shrink:0}
+
+.mc-res-name{font-family:"Zalando Sans Expanded","Zalando Sans Expanded Placeholder",sans-serif;
+  font-size:15px;font-weight:700;line-height:130%;letter-spacing:-.01em;color:rgba(255,255,255,.9)}
+.mc-res-card:hover .mc-res-name{color:#ff6522}
+
+.mc-res-desc{font-size:13px;line-height:160%;color:rgba(255,255,255,.42);flex:1}
+
+.mc-res-tag{font-family:"Zalando Sans Expanded","Zalando Sans Expanded Placeholder",sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:100px;background:rgba(255,102,34,.15);color:#ff6522}
+
+.mc-res-link{font-size:12px;font-weight:600;color:rgba(255,255,255,.35);transition:color .2s}
+.mc-res-card:hover .mc-res-link{color:#ff6522}
+
+.mc-empty{font-size:15px;color:rgba(255,255,255,.32);padding:40px 0;text-align:center}
 </style>
 <div class="mc-blog-wrap">
 

@@ -8,9 +8,9 @@ interface WPResource {
   id: number;
   slug: string;
   title: { rendered: string };
-  content: { rendered: string };
   excerpt: { rendered: string };
   featured_media: number;
+  meta?: { resource_url?: string };
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string; alt_text: string }>;
     'wp:term'?: Array<Array<{ name: string; slug: string }>>;
@@ -26,7 +26,7 @@ function getResourceType(resource: WPResource): string {
 }
 
 function getExcerpt(resource: WPResource): string {
-  const raw = resource.excerpt?.rendered || resource.content?.rendered || '';
+  const raw = resource.excerpt?.rendered || '';
   return raw.replace(/<[^>]+>/g, '').replace(/&hellip;/g, '…').trim().slice(0, 120);
 }
 
@@ -53,7 +53,7 @@ function buildResourcesGrid(resources: WPResource[]): string {
       : '🔗';
     const type = getResourceType(r);
     const excerpt = getExcerpt(r);
-    const url = r.content?.rendered?.match(/href="([^"]+)"/)?.[1] ?? '#';
+    const url = r.meta?.resource_url || '#';
 
     return `    <a href="${url}" class="mc-res-card" data-type="${type}" target="_blank" rel="noopener" data-mc-appear="mc-fade-up" data-mc-delay="${(i % 3) * 60}">
       <div class="mc-res-icon">${icon}</div>
@@ -104,7 +104,7 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      `${WP_API}/mc_resource?per_page=50&_embed=wp:featuredmedia,wp:term&_fields=id,slug,title,content,excerpt,featured_media,_links`,
+      `${WP_API}/mc_resource?per_page=50&_embed=wp:featuredmedia,wp:term&_fields=id,slug,title,excerpt,featured_media,meta,_links`,
       { cache: 'no-store' }
     );
 
