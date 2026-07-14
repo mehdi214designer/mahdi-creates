@@ -6,8 +6,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email, interest, message } = body as Record<string, string>;
 
-    if (!name?.trim() || !email?.trim()) {
-      return Response.json({ error: 'Name and email are required' }, { status: 400 });
+    if (!email?.trim()) {
+      return Response.json({ error: 'Email is required' }, { status: 400 });
     }
 
     const wpRes = await fetch(WP_CONTACT_URL, {
