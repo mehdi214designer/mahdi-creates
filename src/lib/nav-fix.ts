@@ -85,7 +85,9 @@ function buildNavFixScript(): string {
 
 export const NAV_FIX_SCRIPT = buildNavFixScript();
 
-/** Inject nav fix script before </body> */
+const BADGE_HIDE = `<style>.__framer-badge{display:none!important}</style>`;
+
+/** Inject nav fix script and hide Framer badge before </body> */
 export function applyNavFix(html: string): string {
-  return html.replace('</body>', NAV_FIX_SCRIPT + '</body>');
+  return html.replace('</body>', NAV_FIX_SCRIPT + BADGE_HIDE + '</body>');
 }
