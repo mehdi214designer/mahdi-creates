@@ -85,7 +85,10 @@ function buildNavFixScript(): string {
 
 export const NAV_FIX_SCRIPT = buildNavFixScript();
 
-const BADGE_HIDE = `<style>.__framer-badge{display:none!important}</style>`;
+const BADGE_HIDE = `<style>
+.__framer-badge{display:none!important}
+a[data-framer-name="Primary"]{opacity:1!important;transform:translateY(0)!important}
+</style>`;
 
 const GA4_ID = 'G-KE2YS6JJ8M';
 
