@@ -13,7 +13,7 @@ interface WPResource {
   content: { rendered: string };
   excerpt: { rendered: string };
   featured_media: number;
-  meta?: { resource_url?: string };
+  meta?: { resource_url?: string; resource_cta_url?: string; resource_cta_label?: string };
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string; alt_text: string }>;
     'wp:term'?: Array<Array<{ name: string; slug: string }>>;
@@ -39,9 +39,17 @@ function buildArticle(resource: WPResource): string {
   const category = terms[0]?.name ?? 'Resource';
   const content = rewriteWpUrls(resource.content.rendered);
   const externalUrl = resource.meta?.resource_url;
+  const ctaUrl      = resource.meta?.resource_cta_url;
+  const ctaLabel    = resource.meta?.resource_cta_label;
 
   const visitBtn = externalUrl
-    ? `<a href="${externalUrl}" class="mc-res-visit-btn" target="_blank" rel="noopener">Visit Site →</a>`
+    ? `<a href="${externalUrl}" class="mc-res-btn mc-res-btn--ghost" target="_blank" rel="noopener">Visit Site →</a>`
+    : '';
+  const ctaBtn = ctaUrl && ctaLabel
+    ? `<a href="${ctaUrl}" class="mc-res-btn mc-res-btn--primary" target="_blank" rel="noopener">${ctaLabel}</a>`
+    : '';
+  const btnRow = visitBtn || ctaBtn
+    ? `<div class="mc-res-btn-row" data-mc-appear="mc-fade-in" data-mc-delay="140">${ctaBtn}${visitBtn}</div>`
     : '';
 
   return `<!-- MC_POST_START -->
@@ -49,7 +57,7 @@ function buildArticle(resource: WPResource): string {
     <header class="mc-article-header">
       <div class="mc-a-cat" data-mc-appear="mc-fade-in" data-mc-delay="0">${category}</div>
       <h1 class="mc-a-title" data-mc-appear="mc-fade-up" data-mc-delay="80">${resource.title.rendered}</h1>
-      ${visitBtn ? `<div data-mc-appear="mc-fade-in" data-mc-delay="140">${visitBtn}</div>` : ''}
+      ${btnRow}
     </header>
     <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" data-mc-appear="mc-fade-up" data-mc-delay="0">
     <div class="mc-a-body">
@@ -57,13 +65,16 @@ function buildArticle(resource: WPResource): string {
     </div>
   </article>
 <style>
-.mc-res-visit-btn{
+.mc-res-btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.mc-res-btn{
   display:inline-flex;align-items:center;gap:6px;
-  padding:10px 22px;border-radius:100px;
-  background:#ff6522;color:#fff;font-size:14px;font-weight:600;
-  text-decoration:none;transition:opacity .2s;margin-top:8px;
+  padding:10px 24px;border-radius:100px;
+  font-size:14px;font-weight:600;text-decoration:none;transition:opacity .2s,background .2s;
 }
-.mc-res-visit-btn:hover{opacity:.85}
+.mc-res-btn--primary{background:#ff6522;color:#fff}
+.mc-res-btn--primary:hover{opacity:.85}
+.mc-res-btn--ghost{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2)}
+.mc-res-btn--ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
 </style>
 <!-- MC_POST_END -->`;
 }
