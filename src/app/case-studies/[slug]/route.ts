@@ -43,6 +43,53 @@ function rewriteWpUrls(html: string): string {
     .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
 }
 
+const BACK_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>`;
+const X_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+const LI_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`;
+
+const ARTICLE_CSS = `<style>
+.mc-article-header{padding:0!important;border-bottom:none!important;margin-bottom:0!important}
+.mc-a-body{max-width:800px!important;margin:0 auto}
+.mc-a-cover{max-width:800px;width:100%;display:block;margin:0 auto 48px;border-radius:20px;object-fit:cover;aspect-ratio:16/9}
+.mc-a-title{margin:0 0 24px!important}
+.mc-back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:28px;transition:color .2s}
+.mc-back-link:hover{color:rgba(255,255,255,.75)}
+.mc-a-meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.mc-a-cat-pill{background:rgba(255,101,34,.12);border:1px solid rgba(255,101,34,.25);color:#ff6522;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.02em}
+.mc-meta-sep{color:rgba(255,255,255,.2);font-size:14px}
+.mc-meta-text{font-size:14px;color:rgba(255,255,255,.4)}
+.mc-a-lead{font-size:17px;line-height:1.75;color:rgba(255,255,255,.5);margin:0 0 28px;max-width:680px}
+.mc-author-bar{display:flex;align-items:center;gap:12px;padding:20px 0;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:40px}
+.mc-author-avi{width:40px;height:40px;border-radius:50%;background:#ff6522;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.mc-author-nm{font-size:14px;font-weight:600;color:rgba(255,255,255,.85)}
+.mc-author-sb{font-size:12px;color:rgba(255,255,255,.35)}
+.mc-share-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);margin:40px auto 0;max-width:800px}
+.mc-share-lbl{font-size:13px;font-weight:600;color:rgba(255,255,255,.4);margin-right:4px}
+.mc-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;text-decoration:none;cursor:pointer;transition:border-color .2s,color .2s;font-family:inherit;line-height:1}
+.mc-share-btn:hover{border-color:rgba(255,255,255,.35);color:#fff}
+.mc-a-body img{max-width:100%;height:auto;border-radius:10px}
+.mc-a-body figure{margin:32px 0}
+.mc-a-body figure img{width:100%;border-radius:12px}
+.mc-a-body figcaption{text-align:center;font-size:12px;color:rgba(255,255,255,.35);margin-top:8px}
+.mc-a-body .wp-block-image{margin:32px 0}
+.mc-a-body .wp-block-image img{width:100%;border-radius:12px}
+.mc-a-body .wp-block-buttons{margin:28px 0}
+.mc-a-body .wp-block-button__link{display:inline-flex;align-items:center;padding:10px 24px;border-radius:100px;background:#ff6522;color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:opacity .2s}
+.mc-a-body .wp-block-button__link:hover{opacity:.85}
+.mc-a-body .wp-block-separator{border:none;border-top:1px solid rgba(255,255,255,.08);margin:40px 0}
+.mc-promo-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;margin:40px 0;overflow:hidden}
+</style>`;
+
+function buildShareRow(encUrl: string, encTitle: string): string {
+  return `<div class="mc-share-row">
+  <span class="mc-share-lbl">Share:</span>
+  <a class="mc-share-btn" href="https://twitter.com/intent/tweet?url=${encUrl}&text=${encTitle}" target="_blank" rel="noopener noreferrer">${X_SVG}Twitter</a>
+  <a class="mc-share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=${encUrl}" target="_blank" rel="noopener noreferrer">${LI_SVG}LinkedIn</a>
+  <button class="mc-share-btn" id="mc-copy-btn">Copy Link</button>
+</div>
+<script>(function(){var b=document.getElementById('mc-copy-btn');if(b)b.onclick=function(){navigator.clipboard.writeText(location.href).then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy Link';},2000)});};})();</script>`;
+}
+
 function buildArticle(post: WPPost): string {
   const img = post._embedded?.['wp:featuredmedia']?.[0];
   const coverSrc = rewriteWpUrls(img?.source_url ?? buildPlaceholderImg(post.title.rendered));
@@ -50,23 +97,33 @@ function buildArticle(post: WPPost): string {
   const cats = post._embedded?.['wp:term']?.[0] ?? [];
   const category = cats[0]?.name ?? 'Case Study';
   const content = rewriteWpUrls(post.content.rendered);
+  const excerpt = post.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/\[…\]|\[&hellip;\]/g, '').trim().slice(0, 280);
+  const encUrl = encodeURIComponent(`https://mahdicreates.com/case-studies/${post.slug}`);
+  const encTitle = encodeURIComponent(post.title.rendered);
 
   return `<!-- MC_POST_START -->
-  <article>
-    <header class="mc-article-header">
-      <div class="mc-a-cat" data-mc-appear="mc-fade-in" data-mc-delay="0">${category}</div>
-      <h1 class="mc-a-title" data-mc-appear="mc-fade-up" data-mc-delay="80">${post.title.rendered}</h1>
-      <div class="mc-a-meta" data-mc-appear="mc-fade-in" data-mc-delay="160">
-        <span>Md Mahdi Hasan</span><span class="mc-dot" style="background:rgba(255,255,255,.28)"></span>
-        <span>${formatDate(post.date)}</span><span class="mc-dot" style="background:rgba(255,255,255,.28)"></span>
-        <span>${readTime(post.content.rendered)}</span>
-      </div>
-    </header>
-    <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" data-mc-appear="mc-fade-up" data-mc-delay="0">
-    <div class="mc-a-body">
-      ${content}
+${ARTICLE_CSS}
+<article>
+  <a class="mc-back-link" href="/case-studies">${BACK_SVG}Back to Case Studies</a>
+  <header class="mc-article-header">
+    <div class="mc-a-meta-row">
+      <span class="mc-a-cat-pill">${category}</span>
+      <span class="mc-meta-sep">·</span>
+      <span class="mc-meta-text">${formatDate(post.date)}</span>
+      <span class="mc-meta-sep">·</span>
+      <span class="mc-meta-text">${readTime(post.content.rendered)}</span>
     </div>
-  </article>
+    <h1 class="mc-a-title">${post.title.rendered}</h1>
+    ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
+    <div class="mc-author-bar">
+      <div class="mc-author-avi">M</div>
+      <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer</div></div>
+    </div>
+  </header>
+  <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">
+  <div class="mc-a-body">${content}</div>
+  ${buildShareRow(encUrl, encTitle)}
+</article>
 <!-- MC_POST_END -->`;
 }
 
