@@ -7,6 +7,11 @@ const html = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact — Mahdi Creates</title>
 <meta name="description" content="Get in touch with Mahdi — UI/UX design, branding, digital products, or just say hi.">
+<link rel="canonical" href="https://mahdicreates.com/contact">
+<meta property="og:title" content="Contact — Mahdi Creates">
+<meta property="og:description" content="Get in touch with Mahdi — UI/UX design, branding, digital products, or just say hi.">
+<meta property="og:url" content="https://mahdicreates.com/contact">
+<meta property="og:type" content="website">
 <link rel="icon" href="/favicon.ico">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

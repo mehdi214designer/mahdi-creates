@@ -87,7 +87,11 @@ export const NAV_FIX_SCRIPT = buildNavFixScript();
 
 const BADGE_HIDE = `<style>.__framer-badge{display:none!important}</style>`;
 
-/** Inject nav fix script and hide Framer badge before </body> */
+const GA4_ID = 'G-KE2YS6JJ8M';
+
+const GA4_SCRIPT = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>`;
+
+/** Inject GA4, nav fix script, and hide Framer badge before </body> */
 export function applyNavFix(html: string): string {
-  return html.replace('</body>', NAV_FIX_SCRIPT + BADGE_HIDE + '</body>');
+  return html.replace('</body>', GA4_SCRIPT + NAV_FIX_SCRIPT + BADGE_HIDE + '</body>');
 }

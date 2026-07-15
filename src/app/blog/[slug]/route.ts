@@ -129,6 +129,19 @@ export async function GET(
       `<title>${post.title.rendered} | Mahdi Creates</title>`
     );
 
+    // Inject per-post SEO meta (injected first so scrapers prefer these over stale template values)
+    const desc = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
+    const ogImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
+    const canonical = `https://mahdicreates.com/blog/${post.slug}`;
+    const ogTitle = post.title.rendered.replace(/"/g, '&quot;');
+    html = html.replace('<head>', `<head>
+<link rel="canonical" href="${canonical}">
+<meta name="description" content="${desc}">
+<meta property="og:title" content="${ogTitle} | Mahdi Creates">
+<meta property="og:description" content="${desc}">
+<meta property="og:url" content="${canonical}">
+<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}`);
+
     // Fetch related posts (exclude current)
     const relRes = await fetch(
       `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,
