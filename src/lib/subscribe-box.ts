@@ -1,22 +1,14 @@
-const CARD_CSS = `<style>
-.mc-card-row{max-width:800px;margin:40px auto 0;display:flex;flex-direction:column;gap:16px}
-.mc-author-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px 32px}
-.mc-ac-top{display:flex;align-items:center;gap:20px;margin-bottom:14px}
-.mc-ac-avi{width:60px;height:60px;border-radius:50%;background:#ff6522;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0}
-.mc-ac-name{font-size:18px;font-weight:700;color:#fff;margin:0 0 4px}
-.mc-ac-role{font-size:13px;color:rgba(255,255,255,.4);margin:0}
-.mc-ac-bio{font-size:14px;line-height:1.7;color:rgba(255,255,255,.5);margin:0}
-.mc-sub-box{background:rgba(255,101,34,.08);border:1px solid rgba(255,101,34,.28);border-radius:20px;padding:28px 32px}
-.mc-sub-top{display:flex;align-items:flex-start;gap:18px;margin-bottom:20px}
-.mc-sub-emoji{font-size:38px;line-height:1;flex-shrink:0;margin-top:2px}
-.mc-sub-title{font-size:20px;font-weight:700;color:#fff;margin:0 0 5px}
-.mc-sub-desc{font-size:14px;color:rgba(255,255,255,.45);margin:0;line-height:1.6}
-.mc-sub-form{display:flex;gap:10px;flex-wrap:nowrap}
-.mc-sub-input{flex:1;min-width:0;padding:12px 20px;border-radius:100px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;outline:none;transition:border-color .2s}
-.mc-sub-input::placeholder{color:rgba(255,255,255,.3)}
-.mc-sub-input:focus{border-color:rgba(255,101,34,.5)}
-.mc-sub-btn{flex-shrink:0;padding:12px 26px;border-radius:100px;background:#ff6522;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;transition:opacity .2s;white-space:nowrap}
-.mc-sub-btn:hover{opacity:.85}
+const SUB_CSS = `<style>
+.mc-sub-wrap{max-width:800px;margin:32px auto 0}
+.mc-sub-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px}
+.mc-sub-title{font-size:17px;font-weight:700;color:#fff;margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.mc-sub-desc{font-size:13px;color:rgba(255,255,255,.4);margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.mc-sub-label{display:block;font-size:12px;font-weight:500;color:rgba(255,255,255,.45);margin-bottom:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:.01em}
+.mc-sub-input{display:block;width:100%;padding:13px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:15px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;outline:none;transition:border-color .2s;box-sizing:border-box;margin-bottom:16px}
+.mc-sub-input::placeholder{color:rgba(255,255,255,.25)}
+.mc-sub-input:focus{border-color:rgba(255,255,255,.25)}
+.mc-sub-btn{display:block;width:100%;padding:15px;border-radius:12px;background:#fff;color:#0a0a0a;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;transition:opacity .2s}
+.mc-sub-btn:hover{opacity:.9}
 .mc-sub-btn:disabled{opacity:.5;cursor:default}
 .mc-sub-msg{margin-top:12px;font-size:13px;display:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
 .mc-sub-msg.mc-sub-ok{color:#4ade80;display:block}
@@ -56,47 +48,22 @@ const SUB_SCRIPT = `<script>(function(){
   });
 })();</script>`;
 
-const SUBSCRIBE_BOX = `<div class="mc-sub-box">
-  <div class="mc-sub-top">
-    <span class="mc-sub-emoji">📬</span>
-    <div>
-      <h3 class="mc-sub-title">Get design insights in your inbox</h3>
-      <p class="mc-sub-desc">No spam. UI/UX tips, case studies, and resources — delivered straight to you.</p>
-    </div>
-  </div>
-  <form class="mc-sub-form" id="mc-sub-form" novalidate>
-    <input class="mc-sub-input" id="mc-sub-email" type="email" placeholder="your@email.com" required>
-    <button class="mc-sub-btn" id="mc-sub-btn" type="submit">Subscribe →</button>
-  </form>
-  <div class="mc-sub-msg" id="mc-sub-msg"></div>
-</div>`;
-
-const AUTHOR_CARD = `<div class="mc-author-card">
-  <div class="mc-ac-top">
-    <div class="mc-ac-avi">M</div>
-    <div>
-      <p class="mc-ac-name">Md Mahdi Hasan</p>
-      <p class="mc-ac-role">UI/UX Designer &amp; Creative Problem Solver · WPManageNinja</p>
-    </div>
-  </div>
-  <p class="mc-ac-bio">Award-winning designer with 9+ years building high-conversion web experiences and design systems for global brands.</p>
-</div>`;
-
-/** Standalone subscribe box (index pages — no author card) */
 export function buildSubscribeBox(): string {
-  return `${CARD_CSS}
-<div class="mc-card-row">
-  ${SUBSCRIBE_BOX}
+  return `${SUB_CSS}
+<div class="mc-sub-wrap">
+  <div class="mc-sub-box">
+    <p class="mc-sub-title">Get design insights in your inbox</p>
+    <p class="mc-sub-desc">No spam. UI/UX tips, case studies, and resources — straight to you.</p>
+    <form id="mc-sub-form" novalidate>
+      <label class="mc-sub-label" for="mc-sub-email">Email address</label>
+      <input class="mc-sub-input" id="mc-sub-email" type="email" placeholder="you@example.com" required>
+      <button class="mc-sub-btn" id="mc-sub-btn" type="submit">Subscribe →</button>
+    </form>
+    <div class="mc-sub-msg" id="mc-sub-msg"></div>
+  </div>
 </div>
 ${SUB_SCRIPT}`;
 }
 
-/** Author bio card + subscribe box stacked (single article pages) */
-export function buildArticleFooter(): string {
-  return `${CARD_CSS}
-<div class="mc-card-row">
-  ${AUTHOR_CARD}
-  ${SUBSCRIBE_BOX}
-</div>
-${SUB_SCRIPT}`;
-}
+/** Alias kept for single-page routes */
+export const buildArticleFooter = buildSubscribeBox;
