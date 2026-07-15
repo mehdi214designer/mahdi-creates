@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { applyNavFix } from '@/lib/nav-fix';
+import { buildSubscribeBox } from '@/lib/subscribe-box';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
@@ -82,6 +83,8 @@ export async function GET() {
   } catch {
     // serve static fallback on fetch error
   }
+
+  html = html.replace('<!-- MC_BLOG_GRID_END -->', `<!-- MC_BLOG_GRID_END -->\n${buildSubscribeBox()}`);
 
   return new Response(applyNavFix(html), {
     headers: {
