@@ -8,6 +8,7 @@ interface WPResource {
   id: number;
   slug: string;
   title: { rendered: string };
+  content: { rendered: string };
   excerpt: { rendered: string };
   featured_media: number;
   meta?: { resource_url?: string };
@@ -48,20 +49,20 @@ function buildResourcesGrid(resources: WPResource[]): string {
 
   const cards = resources.map((r, i) => {
     const img = r._embedded?.['wp:featuredmedia']?.[0];
-    const icon = img
-      ? `<img src="${img.source_url}" alt="${r.title.rendered}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
-      : '🔗';
     const type = getResourceType(r);
     const excerpt = getExcerpt(r);
-    const url = r.meta?.resource_url || '#';
+    const hasDetailPage = (r.content?.rendered ?? '').replace(/<[^>]+>/g, '').trim().length > 0;
+    const url = hasDetailPage ? `/resources/${r.slug}` : (r.meta?.resource_url || '#');
+    const external = !hasDetailPage;
+    const thumb = img
+      ? `<img src="${img.source_url}" alt="${r.title.rendered}" loading="lazy">`
+      : `<div class="mc-res-thumb-ph">🔗</div>`;
 
-    return `    <a href="${url}" class="mc-res-card" data-type="${type}" target="_blank" rel="noopener" data-mc-appear="mc-fade-up" data-mc-delay="${(i % 3) * 60}">
-      <div class="mc-res-icon">${icon}</div>
-      <div class="mc-res-name">${r.title.rendered}</div>
-      <div class="mc-res-desc">${excerpt}</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto">
-        <span class="mc-res-tag">${type}</span>
-        <span class="mc-res-link">Visit →</span>
+    return `    <a href="${url}" class="mc-res-card" data-type="${type}"${external ? ' target="_blank" rel="noopener"' : ''} data-mc-appear="mc-fade-up" data-mc-delay="${(i % 3) * 60}">
+      <div class="mc-res-thumb">${thumb}</div>
+      <div class="mc-res-body">
+        <div class="mc-res-name">${r.title.rendered}</div>
+        <div class="mc-res-desc">${excerpt}</div>
       </div>
     </a>`;
   }).join('\n');
@@ -103,17 +104,44 @@ export async function GET() {
   );
 
   try {
-    const res = await fetch(
-      `${WP_API}/mc_resource?per_page=50&_embed=wp:featuredmedia,wp:term&_fields=id,slug,title,excerpt,featured_media,meta,_links`,
-      { cache: 'no-store' }
-    );
+    const [resourcesRes, introRes] = await Promise.all([
+      fetch(
+        `${WP_API}/mc_resource?per_page=50&_embed=wp:featuredmedia,wp:term&_fields=id,slug,title,content,excerpt,featured_media,meta,_links`,
+        { cache: 'no-store' }
+      ),
+      fetch(
+        `${WP_API}/pages?slug=resources-intro&_fields=title,excerpt`,
+        { cache: 'no-store' }
+      ),
+    ]);
 
-    if (res.ok) {
-      const resources: WPResource[] = await res.json();
+    if (resourcesRes.ok) {
+      const resources: WPResource[] = await resourcesRes.json();
       html = html.replace(
         /<!-- MC_RESOURCES_GRID_START -->[\s\S]*?<!-- MC_RESOURCES_GRID_END -->/,
         buildResourcesGrid(resources)
       );
+    }
+
+    if (introRes.ok) {
+      const pages = await introRes.json();
+      if (pages.length > 0) {
+        const page = pages[0];
+        const title = page.title?.rendered?.trim();
+        const desc = page.excerpt?.rendered?.replace(/<[^>]+>/g, '').trim();
+        if (title) {
+          html = html.replace(
+            /<!-- MC_TOOLKIT_TITLE_START -->[\s\S]*?<!-- MC_TOOLKIT_TITLE_END -->/,
+            `<!-- MC_TOOLKIT_TITLE_START -->${title}<!-- MC_TOOLKIT_TITLE_END -->`
+          );
+        }
+        if (desc) {
+          html = html.replace(
+            /<!-- MC_TOOLKIT_DESC_START -->[\s\S]*?<!-- MC_TOOLKIT_DESC_END -->/,
+            `<!-- MC_TOOLKIT_DESC_START -->${desc}<!-- MC_TOOLKIT_DESC_END -->`
+          );
+        }
+      }
     }
   } catch {
     // serve static fallback

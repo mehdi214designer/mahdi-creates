@@ -91,7 +91,44 @@ const GA4_ID = 'G-KE2YS6JJ8M';
 
 const GA4_SCRIPT = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>`;
 
-/** Inject GA4, nav fix script, and hide Framer badge before </body> */
+function buildA11yScript(): string {
+  return `<script>
+(function(){
+  function labelFor(href){
+    var m;
+    if(/^(\\.\\/|\\/)?$/.test(href)) return 'Mahdi Creates – Home';
+    if(/instagram\\.com/.test(href)) return 'Instagram';
+    if(/facebook\\.com/.test(href)) return 'Facebook';
+    if(/x\\.com|twitter\\.com/.test(href)) return 'X (Twitter)';
+    if(/profiles\\.wordpress\\.org|wordpress\\.org\\/u/.test(href)) return 'WordPress';
+    if(/dribbble\\.com/.test(href)) return 'Dribbble';
+    if(/behance\\.net/.test(href)) return 'Behance';
+    m=href.match(/linkedin\\.com\\/in\\/([^/?\\s]+)/);
+    if(m){var s=m[1].replace(/-[0-9a-f]{6,}$/,'');return s.split('-').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ')+' on LinkedIn';}
+    if(/linkedin\\.com/.test(href)) return 'LinkedIn';
+    return '';
+  }
+  function fixA11y(){
+    document.querySelectorAll('a[href]').forEach(function(a){
+      if(a.getAttribute('aria-label')) return;
+      if((a.textContent||'').trim()) return;
+      var label=labelFor(a.getAttribute('href')||'');
+      if(label) a.setAttribute('aria-label',label);
+    });
+    if(!document.querySelector('main,[role="main"]')){
+      var page=document.querySelector('[data-framer-page-container]')||
+               document.querySelector('.framer-app')||
+               document.querySelector('div[class^="framer-"]');
+      if(page) page.setAttribute('role','main');
+    }
+  }
+  fixA11y();
+  [300,900,2000].forEach(function(d){setTimeout(fixA11y,d);});
+})();
+</script>`;
+}
+
+/** Inject GA4, accessibility fixes, nav fix script, and hide Framer badge before </body> */
 export function applyNavFix(html: string): string {
-  return html.replace('</body>', GA4_SCRIPT + NAV_FIX_SCRIPT + BADGE_HIDE + '</body>');
+  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + BADGE_HIDE + '</body>');
 }

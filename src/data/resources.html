@@ -354,45 +354,38 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 .mc-res-filter:hover{border-color:rgba(255,255,255,.35);color:rgba(255,255,255,.7)}
 .mc-res-filter.active{background:#ff6522;border-color:#ff6522;color:#fff}
 
-.mc-res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:0}
+.mc-res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:0}
 @media(max-width:900px){.mc-res-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.mc-res-grid{grid-template-columns:1fr}}
 
-.mc-res-card{text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:12px;
+.mc-res-card{text-decoration:none;color:inherit;display:flex;flex-direction:column;
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
-  border-radius:16px;padding:20px;transition:border-color .2s,background .2s;cursor:pointer}
-.mc-res-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,102,34,.35)}
+  border-radius:16px;overflow:hidden;transition:border-color .2s,transform .25s cubic-bezier(.25,1,.4,1);cursor:pointer}
+.mc-res-card:hover{border-color:rgba(255,102,34,.4);transform:translateY(-3px)}
 
-.mc-res-icon{width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,.07);
-  display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;flex-shrink:0}
+.mc-res-thumb{width:100%;aspect-ratio:16/9;overflow:hidden;background:rgba(255,255,255,.06);flex-shrink:0}
+.mc-res-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s cubic-bezier(.25,1,.4,1)}
+.mc-res-card:hover .mc-res-thumb img{transform:scale(1.05)}
+.mc-res-thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;color:rgba(255,255,255,.12)}
 
+.mc-res-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
 .mc-res-name{font-family:"Zalando Sans Expanded","Zalando Sans Expanded Placeholder",sans-serif;
-  font-size:15px;font-weight:700;line-height:130%;letter-spacing:-.01em;color:rgba(255,255,255,.9)}
+  font-size:15px;font-weight:700;line-height:130%;letter-spacing:-.01em;color:rgba(255,255,255,.9);transition:color .2s}
 .mc-res-card:hover .mc-res-name{color:#ff6522}
-
-.mc-res-desc{font-size:13px;line-height:160%;color:rgba(255,255,255,.42);flex:1}
-
-.mc-res-tag{font-family:"Zalando Sans Expanded","Zalando Sans Expanded Placeholder",sans-serif;
-  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  padding:4px 10px;border-radius:100px;background:rgba(255,102,34,.15);color:#ff6522}
-
-.mc-res-link{font-size:12px;font-weight:600;color:rgba(255,255,255,.35);transition:color .2s}
-.mc-res-card:hover .mc-res-link{color:#ff6522}
+.mc-res-desc{font-size:13px;line-height:162%;color:rgba(255,255,255,.42)}
 
 .mc-empty{font-size:15px;color:rgba(255,255,255,.32);padding:40px 0;text-align:center}
 </style>
 <div class="mc-blog-wrap">
 
   <section class="mc-hero">
-    <div class="mc-label" data-mc-appear="mc-fade-in" data-mc-delay="0">Curated</div>
     <h1 data-mc-appear="mc-fade-up" data-mc-delay="60">Tools &amp; <br><span style="color:#ff6522">Resources.</span></h1>
     <p class="mc-hero-sub" data-mc-appear="mc-fade-up" data-mc-delay="130">A curated collection of websites, products, and files I use and recommend.</p>
   </section>
 
   <div class="mc-recent-head">
-    <div class="mc-label" data-mc-appear="mc-fade-in" data-mc-delay="0">Handpicked</div>
-    <h2 data-mc-appear="mc-fade-up" data-mc-delay="50">My Toolkit</h2>
-    <p data-mc-appear="mc-fade-up" data-mc-delay="100">Tools, websites, and files that make my work better.</p>
+    <h2 data-mc-appear="mc-fade-up" data-mc-delay="50"><!-- MC_TOOLKIT_TITLE_START -->My Toolkit<!-- MC_TOOLKIT_TITLE_END --></h2>
+    <p data-mc-appear="mc-fade-up" data-mc-delay="100"><!-- MC_TOOLKIT_DESC_START -->Tools, websites, and files that make my work better.<!-- MC_TOOLKIT_DESC_END --></p>
   </div>
 
 <!-- MC_RESOURCES_GRID_START -->
