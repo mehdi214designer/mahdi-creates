@@ -71,7 +71,8 @@ const ARTICLE_CSS = `<style>
 .mc-toc-h3 a{padding-left:16px;font-size:13px;color:rgba(255,255,255,.4)}
 .mc-share-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);margin:40px auto 0;max-width:800px}
 .mc-share-lbl{font-size:13px;font-weight:600;color:rgba(255,255,255,.4);margin-right:4px}
-.mc-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;text-decoration:none;cursor:pointer;transition:border-color .2s,color .2s;font-family:inherit;line-height:1}
+.mc-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.55);text-decoration:none;cursor:pointer;transition:border-color .2s,color .2s;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:500}
+button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
 .mc-share-btn:hover{border-color:rgba(255,255,255,.35);color:#fff}
 .mc-a-body img{max-width:100%;height:auto;border-radius:10px}
 .mc-a-body figure{margin:32px 0}
