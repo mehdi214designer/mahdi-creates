@@ -178,7 +178,7 @@ export async function GET(
   return new Response(applyNavFix(html), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+      'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=300',
     },
   });
 }
