@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { NextRequest } from 'next/server';
 import { applyNavFix } from '@/lib/nav-fix';
-import { buildSubscribeBox } from '@/lib/subscribe-box';
+import { buildArticleFooter } from '@/lib/subscribe-box';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
@@ -164,7 +164,7 @@ ${ARTICLE_CSS}
   ${toc}
   <div class="mc-a-body">${modifiedContent}</div>
   ${buildShareRow(encUrl, encTitle)}
-  ${buildSubscribeBox()}
+  ${buildArticleFooter()}
 </article>
 <!-- MC_POST_END -->`;
 }
