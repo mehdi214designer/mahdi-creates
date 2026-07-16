@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { fetchFramerPage } from '@/lib/framer-fetch';
 import { applyNavFix } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
@@ -84,10 +83,7 @@ ${cards}
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  let html = readFileSync(
-    path.join(process.cwd(), 'src/data/projects.html'),
-    'utf-8'
-  );
+  let html = await fetchFramerPage('/projects', 'projects.html', 0);
 
   try {
     const res = await fetch(

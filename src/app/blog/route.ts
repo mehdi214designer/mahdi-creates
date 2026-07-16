@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { fetchFramerPage } from '@/lib/framer-fetch';
 import { applyNavFix } from '@/lib/nav-fix';
 import { buildSubscribeBox } from '@/lib/subscribe-box';
 
@@ -60,10 +59,7 @@ function buildGrid(posts: WPPost[]): string {
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  let html = readFileSync(
-    path.join(process.cwd(), 'src/data/blog.html'),
-    'utf-8'
-  );
+  let html = await fetchFramerPage('/blog', 'blog.html', 0);
 
   try {
     const res = await fetch(

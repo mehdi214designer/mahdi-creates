@@ -1,11 +1,8 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { fetchFramerPage } from '@/lib/framer-fetch';
 import { applyNavFix } from '@/lib/nav-fix';
 
-export const dynamic = 'force-static';
+export const revalidate = 60;
 
-// Intercepts the Framer newsletter form after hydration and mirrors
-// submissions to our /api/contact endpoint → FluentCRM Newsletter list.
 const NEWSLETTER_CAPTURE = `<script>
 (function(){
   function bindNewsletterForm(){
@@ -35,17 +32,13 @@ const NEWSLETTER_CAPTURE = `<script>
 </script>`;
 
 export async function GET() {
-  let html = readFileSync(
-    path.join(process.cwd(), 'src/data/home.html'),
-    'utf-8'
-  );
-
-  html = applyNavFix(html).replace('</body>', NEWSLETTER_CAPTURE + '</body>');
+  const raw = await fetchFramerPage('/', 'home.html');
+  const html = applyNavFix(raw).replace('</body>', NEWSLETTER_CAPTURE + '</body>');
 
   return new Response(html, {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
     },
   });
 }

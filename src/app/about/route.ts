@@ -1,19 +1,15 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { fetchFramerPage } from '@/lib/framer-fetch';
 import { applyNavFix } from '@/lib/nav-fix';
 
-export const dynamic = 'force-static';
+export const revalidate = 60;
 
 export async function GET() {
-  const html = readFileSync(
-    path.join(process.cwd(), 'src/data/about.html'),
-    'utf-8'
-  );
+  const raw = await fetchFramerPage('/about', 'about.html');
 
-  return new Response(applyNavFix(html), {
+  return new Response(applyNavFix(raw), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
     },
   });
 }

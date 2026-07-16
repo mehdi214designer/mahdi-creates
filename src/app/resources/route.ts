@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { fetchFramerPage } from '@/lib/framer-fetch';
 import { applyNavFix } from '@/lib/nav-fix';
 import { buildSubscribeBox } from '@/lib/subscribe-box';
 
@@ -99,10 +98,7 @@ ${cards}
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  let html = readFileSync(
-    path.join(process.cwd(), 'src/data/resources.html'),
-    'utf-8'
-  );
+  let html = await fetchFramerPage('/resources', 'resources.html', 0);
 
   try {
     const [resourcesRes, introRes] = await Promise.all([
