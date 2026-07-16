@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-MC-Key': API_KEY },
       body: JSON.stringify({
-        name: '',
+        name: 'Newsletter Subscriber',
         email,
         interest: 'newsletter',
         message: 'Newsletter subscription via mahdicreates.com',
