@@ -18,43 +18,40 @@ const SUB_CSS = `<style>
 </style>`;
 
 const SUB_SCRIPT = `<script>(function(){
-  var form=document.getElementById('mc-sub-form');
-  var btn=document.getElementById('mc-sub-btn');
-  var msg=document.getElementById('mc-sub-msg');
-  var inp=document.getElementById('mc-sub-email');
-  if(!form)return;
-  form.addEventListener('submit',function(e){
+  document.addEventListener('submit',function(e){
+    if(!e.target||e.target.id!=='mc-sub-form')return;
     e.preventDefault();
-    var email=(inp.value||'').trim();
+    var form=e.target;
+    var btn=document.getElementById('mc-sub-btn');
+    var msg=document.getElementById('mc-sub-msg');
+    var inp=document.getElementById('mc-sub-email');
+    var email=(inp?inp.value:'').trim();
     if(!email)return;
-    btn.disabled=true;btn.textContent='Subscribing…';
-    msg.className='mc-sub-msg';msg.textContent='';
+    if(btn){btn.disabled=true;btn.textContent='Subscribing…';}
+    if(msg){msg.className='mc-sub-msg';msg.textContent='';}
     fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})})
       .then(function(r){return r.json();})
       .then(function(d){
         if(d.success){
-          msg.className='mc-sub-msg mc-sub-ok';
-          msg.textContent='✓ You\'re in! Check your inbox for a confirmation.';
+          if(msg){msg.className='mc-sub-msg mc-sub-ok';msg.textContent='✓ You\'re in! Check your inbox for a confirmation.';}
           form.style.display='none';
         }else{
-          msg.className='mc-sub-msg mc-sub-err';
-          msg.textContent=d.error||'Something went wrong. Please try again.';
-          btn.disabled=false;btn.textContent='Subscribe →';
+          if(msg){msg.className='mc-sub-msg mc-sub-err';msg.textContent=d.error||'Something went wrong. Please try again.';}
+          if(btn){btn.disabled=false;btn.textContent='Subscribe →';}
         }
       })
       .catch(function(){
-        msg.className='mc-sub-msg mc-sub-err';
-        msg.textContent='Network error. Please try again.';
-        btn.disabled=false;btn.textContent='Subscribe →';
+        if(msg){msg.className='mc-sub-msg mc-sub-err';msg.textContent='Network error. Please try again.';}
+        if(btn){btn.disabled=false;btn.textContent='Subscribe →';}
       });
-  });
+  },true);
 })();</script>`;
 
 export function buildSubscribeBox(): string {
   return `${SUB_CSS}
 <div class="mc-sub-wrap">
   <div class="mc-sub-box">
-    <form id="mc-sub-form" novalidate>
+    <form id="mc-sub-form" action="javascript:void(0)" novalidate>
       <label class="mc-sub-label" for="mc-sub-email">Email address</label>
       <input class="mc-sub-input" id="mc-sub-email" type="email" placeholder="you@example.com" required>
       <button class="mc-sub-btn" id="mc-sub-btn" type="submit">Subscribe →</button>
