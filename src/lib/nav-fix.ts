@@ -18,6 +18,7 @@ const ROUTE_MAP: Record<string, string> = {
 const TEXT_LINK_MAP: Record<string, string> = {
   'Case Studies': '/case-studies',
   'Case Study': '/case-studies',
+  'Resources': '/resources',
 };
 
 function buildNavFixScript(): string {
@@ -131,7 +132,53 @@ function buildA11yScript(): string {
 </script>`;
 }
 
+function buildNavInjectScript(): string {
+  return `<script>
+(function(){
+  function injectNavLinks(){
+    // Add "Resources" after "Case Studies" in each nav instance that doesn't already have it
+    document.querySelectorAll('[data-framer-name="Case Studies"]').forEach(function(cs){
+      var outer=cs.parentNode;
+      if(!outer)return;
+      var navCont=outer.parentNode;
+      if(!navCont)return;
+      // Guard: skip if Resources already present (text or link)
+      var paras=navCont.querySelectorAll('p.framer-text');
+      for(var i=0;i<paras.length;i++){if((paras[i].textContent||'').trim()==='Resources')return;}
+      if(navCont.querySelector('[href="/resources"]'))return;
+      // Clone Case Studies block and rename to Resources
+      var res=outer.cloneNode(true);
+      var nm=res.querySelector('[data-framer-name]');if(nm)nm.setAttribute('data-framer-name','Resources');
+      var tx=res.querySelector('p.framer-text');if(tx)tx.textContent='Resources';
+      res.style.cursor='pointer';
+      res.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();location.href='/resources';},true);
+      outer.insertAdjacentElement('afterend',res);
+    });
+
+    // Add "Contact" before each Blogs link in navs that don't already have it
+    document.querySelectorAll('a.framer-vuapxt[href="/blog"],a.framer-vuapxt[href="/insights"]').forEach(function(blogs){
+      var parent=blogs.parentNode;
+      if(!parent)return;
+      // Guard: skip if Contact already present
+      var paras2=parent.querySelectorAll('p.framer-text');
+      for(var j=0;j<paras2.length;j++){if((paras2[j].textContent||'').trim()==='Contact')return;}
+      if(parent.querySelector('[href="/contact"]'))return;
+      // Clone Blogs link and rename to Contact
+      var ct=blogs.cloneNode(true);
+      ct.href='/contact';
+      var nm2=ct.querySelector('[data-framer-component-type="RichTextContainer"]');if(nm2)nm2.setAttribute('data-framer-name','Contact');
+      var tx2=ct.querySelector('p.framer-text');if(tx2)tx2.textContent='Contact';
+      blogs.insertAdjacentElement('beforebegin',ct);
+    });
+  }
+  injectNavLinks();
+  [300,800,1800,3000].forEach(function(d){setTimeout(injectNavLinks,d);});
+  new MutationObserver(injectNavLinks).observe(document.body,{childList:true,subtree:true});
+})();
+</script>`;
+}
+
 /** Inject GA4, accessibility fixes, nav fix script, and hide Framer badge before </body> */
 export function applyNavFix(html: string): string {
-  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + BADGE_HIDE + '</body>');
+  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + '</body>');
 }
