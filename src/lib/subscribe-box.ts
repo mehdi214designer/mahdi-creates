@@ -31,7 +31,7 @@ const SUB_SCRIPT = `<script>(function(){
       .then(function(r){return r.json();})
       .then(function(d){
         if(d.success){
-          if(msg){msg.className='mc-sub-msg mc-sub-ok';msg.textContent='✓ You\'re in! Check your inbox for a confirmation.';}
+          if(msg){msg.className='mc-sub-msg mc-sub-ok';msg.textContent='✓ Subscribed! Check your inbox for a welcome email.';}
           inp.value='';
           btn.style.display='none';
         }else{
