@@ -135,39 +135,38 @@ function buildA11yScript(): string {
 function buildNavInjectScript(): string {
   return `<style>
 /* Expand right nav container so added Contact link doesn't clip Resume */
-.framer-1d8j9t5{width:auto!important;min-width:344px}
+.framer-1d8j9t5{width:auto!important}
+/* Ensure left nav also sizes to content */
+.framer-nmxeya{width:auto!important}
 </style>
 <script>
 (function(){
   function injectNavLinks(){
-    // Add "Resources" after "Case Studies" in each nav instance that doesn't already have it
+    // Add "Resources" after "Case Studies"
+    // Clone an existing <a> nav link (Home) so it shares the same class/padding as other nav items
     document.querySelectorAll('[data-framer-name="Case Studies"]').forEach(function(cs){
-      var outer=cs.parentNode;
-      if(!outer)return;
-      var navCont=outer.parentNode;
+      var outer=cs.parentNode; // framer-13yt27x
+      var navCont=outer&&outer.parentNode; // framer-nmxeya
       if(!navCont)return;
-      // Guard: skip if Resources already present (text or link)
       var paras=navCont.querySelectorAll('p.framer-text');
       for(var i=0;i<paras.length;i++){if((paras[i].textContent||'').trim()==='Resources')return;}
       if(navCont.querySelector('[href="/resources"]'))return;
-      // Clone Case Studies block and rename to Resources
-      var res=outer.cloneNode(true);
-      var nm=res.querySelector('[data-framer-name]');if(nm)nm.setAttribute('data-framer-name','Resources');
+      // Use Home <a> as the template (no page-current marker, same CSS as all nav links)
+      var tmpl=navCont.querySelector('a[href="/"]');
+      if(!tmpl)return;
+      var res=tmpl.cloneNode(true);
+      res.href='/resources';
+      res.removeAttribute('data-framer-appear-id');
       var tx=res.querySelector('p.framer-text');if(tx)tx.textContent='Resources';
-      res.style.cursor='pointer';
-      res.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();location.href='/resources';},true);
       outer.insertAdjacentElement('afterend',res);
     });
 
-    // Add "Contact" before each Blogs link in navs that don't already have it
+    // Add "Contact" before each Blogs link
     document.querySelectorAll('a.framer-vuapxt[href="/blog"],a.framer-vuapxt[href="/insights"]').forEach(function(blogs){
-      var parent=blogs.parentNode;
-      if(!parent)return;
-      // Guard: skip if Contact already present
+      var parent=blogs.parentNode;if(!parent)return;
       var paras2=parent.querySelectorAll('p.framer-text');
       for(var j=0;j<paras2.length;j++){if((paras2[j].textContent||'').trim()==='Contact')return;}
       if(parent.querySelector('[href="/contact"]'))return;
-      // Clone Blogs link and rename to Contact
       var ct=blogs.cloneNode(true);
       ct.href='/contact';
       var nm2=ct.querySelector('[data-framer-component-type="RichTextContainer"]');if(nm2)nm2.setAttribute('data-framer-name','Contact');
