@@ -133,7 +133,11 @@ function buildA11yScript(): string {
 }
 
 function buildNavInjectScript(): string {
-  return `<script>
+  return `<style>
+/* Expand right nav container so added Contact link doesn't clip Resume */
+.framer-1d8j9t5{width:auto!important;min-width:344px}
+</style>
+<script>
 (function(){
   function injectNavLinks(){
     // Add "Resources" after "Case Studies" in each nav instance that doesn't already have it
