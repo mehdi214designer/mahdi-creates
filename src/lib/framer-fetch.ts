@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 
 const FRAMER_BASE = process.env.FRAMER_BASE_URL ?? 'https://mahdicreates.framer.ai';
+const CANONICAL_BASE = 'https://www.mahdicreates.com';
 
 // Framer uses different paths internally for some pages
 const FRAMER_PATH_MAP: Record<string, string> = {
@@ -12,6 +13,14 @@ const FRAMER_PATH_MAP: Record<string, string> = {
   '/case-studies': '/case-studies',
   '/resources': '/resources',
 };
+
+function fixCanonical(html: string, nextPath: string): string {
+  const canonical = `${CANONICAL_BASE}${nextPath === '/' ? '' : nextPath}`;
+  // Replace any existing canonical tag (Framer sets it to the Framer domain)
+  return html
+    .replace(/<link[^>]+rel=["']canonical["'][^>]*>/gi, '')
+    .replace('</head>', `<link rel="canonical" href="${canonical}">\n</head>`);
+}
 
 /**
  * Fetch a Framer-published page HTML.
@@ -34,12 +43,15 @@ export async function fetchFramerPage(
       headers: { Accept: 'text/html', 'User-Agent': 'MahdiCreates-Bot/1.0' },
     });
 
-    if (res.ok) return res.text();
+    if (res.ok) return fixCanonical(await res.text(), nextPath);
     console.warn(`[framer-fetch] ${url} returned ${res.status}, using fallback`);
   } catch (err) {
     console.warn(`[framer-fetch] fetch failed for ${url}:`, err);
   }
 
   // Emergency fallback: serve the last known good static snapshot
-  return readFileSync(path.join(process.cwd(), 'src/data', fallback), 'utf-8');
+  return fixCanonical(
+    readFileSync(path.join(process.cwd(), 'src/data', fallback), 'utf-8'),
+    nextPath,
+  );
 }
