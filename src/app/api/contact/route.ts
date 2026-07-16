@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const wpRes = await fetch(WP_CONTACT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-MC-Key': API_KEY },
-      body: JSON.stringify({ name: name.trim(), email: email.trim(), interest, message }),
+      body: JSON.stringify({ name: (name ?? '').trim() || email.trim().split('@')[0], email: email.trim(), interest, message }),
     });
 
     if (!wpRes.ok) {
