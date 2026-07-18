@@ -185,3 +185,22 @@ function buildNavInjectScript(): string {
 export function applyNavFix(html: string): string {
   return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + '</body>');
 }
+
+/** Return a styled 404 Response using the Framer 404 page snapshot */
+export function serve404Response(): Response {
+  const { readFileSync } = require('fs') as typeof import('fs');
+  const path = require('path') as typeof import('path');
+  let html = readFileSync(path.join(process.cwd(), 'src/data/404.html'), 'utf-8');
+  // Fix canonical to point to our domain, not framer.ai
+  html = html
+    .replace(/https:\/\/mahdicreates\.framer\.ai\/404/g, 'https://mahdicreates.com/404')
+    .replace(/<title>[^<]*<\/title>/, '<title>Page Not Found | Mahdi Creates</title>');
+  html = applyNavFix(html);
+  return new Response(html, {
+    status: 404,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+    },
+  });
+}

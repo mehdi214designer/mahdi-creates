@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { NextRequest } from 'next/server';
-import { applyNavFix } from '@/lib/nav-fix';
+import { applyNavFix, serve404Response } from '@/lib/nav-fix';
 import { buildArticleFooter } from '@/lib/subscribe-box';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
@@ -211,7 +211,7 @@ export async function GET(
 
     const posts: WPPost[] = await res.json();
     if (posts.length === 0) {
-      return new Response('Not Found', { status: 404 });
+      return serve404Response();
     }
 
     const post = posts[0];
@@ -256,7 +256,7 @@ export async function GET(
       }
     }
   } catch {
-    // serve static fallback
+    return serve404Response();
   }
 
   return new Response(applyNavFix(html), {
