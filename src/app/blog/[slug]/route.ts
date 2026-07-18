@@ -10,6 +10,7 @@ interface WPPost {
   id: number;
   slug: string;
   date: string;
+  modified: string;
   title: { rendered: string };
   content: { rendered: string };
   excerpt: { rendered: string };
@@ -203,7 +204,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,excerpt,featured_media,_links`,
+      `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,modified,title,content,excerpt,featured_media,_links`,
       { cache: 'no-store' }
     );
 
@@ -233,13 +234,27 @@ export async function GET(
     const ogImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://mahdicreates.com/blog/${post.slug}`;
     const ogTitle = post.title.rendered.replace(/"/g, '&quot;');
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title.rendered,
+      description: post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160),
+      url: canonical,
+      datePublished: post.date,
+      dateModified: post.modified || post.date,
+      author: { '@type': 'Person', name: 'Md Mahdi Hasan', url: 'https://mahdicreates.com/about' },
+      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://mahdicreates.com' },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+    };
+    if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
 <meta name="description" content="${desc}">
 <meta property="og:title" content="${ogTitle} | Mahdi Creates">
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}`);
+<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
 
     // Fetch related posts (exclude current)
     const relRes = await fetch(
