@@ -62,7 +62,7 @@ const ARTICLE_CSS = `<style>
 .mc-meta-text{font-size:14px;color:rgba(255,255,255,.4)}
 .mc-a-lead{font-size:17px;line-height:1.75;color:rgba(255,255,255,.5);margin:0 0 28px;max-width:680px}
 .mc-author-bar{display:flex;align-items:center;gap:12px;padding:20px 0;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:40px}
-.mc-author-avi{width:40px;height:40px;border-radius:50%;background:#ff6522;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.mc-author-avi{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block}
 .mc-author-nm{font-size:14px;font-weight:600;color:rgba(255,255,255,.85)}
 .mc-author-sb{font-size:12px;color:rgba(255,255,255,.35)}
 .mc-share-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);margin:40px auto 0;max-width:800px}
@@ -119,7 +119,7 @@ ${ARTICLE_CSS}
     <h1 class="mc-a-title">${post.title.rendered}</h1>
     ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
     <div class="mc-author-bar">
-      <div class="mc-author-avi">M</div>
+      <img class="mc-author-avi" src="https://secure.gravatar.com/avatar/74b3cff15ccab2eafc5e0648238ad38be70977662de9220e914a8c098f332bf0?s=80&d=mp&r=g" alt="Md Mahdi Hasan">
       <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer</div></div>
     </div>
   </header>
