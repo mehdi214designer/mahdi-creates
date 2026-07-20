@@ -6,6 +6,14 @@ import { buildArticleFooter } from '@/lib/subscribe-box';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
+interface WPComment {
+  id: number;
+  date: string;
+  author_name: string;
+  author_avatar_urls: Record<string, string>;
+  content: { rendered: string };
+}
+
 interface WPPost {
   id: number;
   slug: string;
@@ -88,6 +96,85 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body .wp-block-separator{border:none;border-top:1px solid rgba(255,255,255,.08);margin:40px 0}
 .mc-promo-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;margin:40px 0;overflow:hidden}
 </style>`;
+
+const COMMENT_CSS = `<style>
+.mc-comments-section{max-width:800px;margin:48px auto 0;padding-top:40px;border-top:1px solid rgba(255,255,255,.07)}
+.mc-comments-title{font-size:18px;font-weight:700;color:rgba(255,255,255,.85);margin:0 0 28px}
+.mc-comment{display:flex;gap:14px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.05)}
+.mc-comment:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.mc-comment-avi{width:40px;height:40px;border-radius:50%;flex-shrink:0;object-fit:cover}
+.mc-comment-name{font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin-right:10px}
+.mc-comment-date{font-size:12px;color:rgba(255,255,255,.3)}
+.mc-comment-text{font-size:14px;line-height:1.7;color:rgba(255,255,255,.55);margin-top:6px}
+.mc-comment-text p{margin:0}
+.mc-no-comments{font-size:14px;color:rgba(255,255,255,.3);margin-bottom:8px}
+.mc-comment-form{margin-top:36px;padding-top:32px;border-top:1px solid rgba(255,255,255,.07)}
+.mc-comment-form h4{font-size:16px;font-weight:700;color:rgba(255,255,255,.85);margin:0 0 18px}
+.mc-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:600px){.mc-form-row{grid-template-columns:1fr}}
+.mc-form-input,.mc-form-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;color:rgba(255,255,255,.85);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;box-sizing:border-box}
+.mc-form-input:focus,.mc-form-textarea:focus{border-color:rgba(255,101,34,.5)}
+.mc-form-input::placeholder,.mc-form-textarea::placeholder{color:rgba(255,255,255,.25)}
+.mc-form-textarea{resize:vertical;min-height:120px;margin-bottom:12px}
+.mc-form-submit{background:#ff6522;color:#fff;border:none;border-radius:100px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s;font-family:inherit}
+.mc-form-submit:hover{opacity:.85}
+.mc-form-submit:disabled{opacity:.5;cursor:not-allowed}
+.mc-form-note{font-size:12px;color:rgba(255,255,255,.25);margin-top:10px;margin-bottom:0}
+.mc-form-msg{margin-top:12px;font-size:13px;padding:10px 14px;border-radius:8px;display:none}
+.mc-form-msg.success{display:block;background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+.mc-form-msg.error{display:block;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+</style>`;
+
+function buildCommentSection(comments: WPComment[], postId: number): string {
+  const list = comments.length === 0
+    ? `<p class="mc-no-comments">No comments yet — be the first to share your thoughts!</p>`
+    : comments.map(c => {
+        const avatar = c.author_avatar_urls['48'] || c.author_avatar_urls['96'] || '';
+        return `<div class="mc-comment">
+  <img class="mc-comment-avi" src="${avatar}" alt="${c.author_name}" loading="lazy">
+  <div>
+    <div><span class="mc-comment-name">${c.author_name}</span><span class="mc-comment-date">${formatDate(c.date)}</span></div>
+    <div class="mc-comment-text">${c.content.rendered}</div>
+  </div>
+</div>`;
+      }).join('');
+
+  return `${COMMENT_CSS}
+<section class="mc-comments-section">
+  <h3 class="mc-comments-title">${comments.length} Comment${comments.length !== 1 ? 's' : ''}</h3>
+  ${list}
+  <form class="mc-comment-form" id="mc-comment-form" data-post-id="${postId}">
+    <h4>Leave a Comment</h4>
+    <div class="mc-form-row">
+      <input class="mc-form-input" type="text" name="author_name" placeholder="Your name *" required maxlength="100">
+      <input class="mc-form-input" type="email" name="author_email" placeholder="Email * (not published)" required>
+    </div>
+    <textarea class="mc-form-textarea" name="content" placeholder="Write your comment..." required rows="5" maxlength="5000"></textarea>
+    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+    <button class="mc-form-submit" type="submit">Post Comment</button>
+    <p class="mc-form-note">Your email won't be published. Comments are moderated.</p>
+    <div class="mc-form-msg" id="mc-form-msg"></div>
+  </form>
+</section>
+<script>(function(){
+  var form=document.getElementById('mc-comment-form');
+  if(!form)return;
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var btn=form.querySelector('.mc-form-submit');
+    var msg=document.getElementById('mc-form-msg');
+    btn.disabled=true;btn.textContent='Posting...';
+    msg.className='mc-form-msg';msg.textContent='';
+    try{
+      var res=await fetch('/api/comments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({post_id:parseInt(form.dataset.postId),author_name:form.author_name.value.trim(),author_email:form.author_email.value.trim(),content:form.content.value.trim(),website:form.website.value})});
+      var r=await res.json();
+      if(res.ok&&r.success){msg.className='mc-form-msg success';msg.textContent=r.status==='hold'?'Thanks! Your comment is awaiting moderation.':'Comment posted!';form.reset();}
+      else{throw new Error(r.error||'Failed to post comment.');}
+    }catch(err){msg.className='mc-form-msg error';msg.textContent=err.message||'Something went wrong. Please try again.';}
+    finally{btn.disabled=false;btn.textContent='Post Comment';}
+  });
+})();</script>`;
+}
 
 function buildShareRow(encUrl: string, encTitle: string): string {
   return `<div class="mc-share-row">
@@ -268,19 +355,31 @@ export async function GET(
       );
     }
 
-    // Fetch related posts (exclude current)
-    const relRes = await fetch(
-      `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,
-      { cache: 'no-store' }
-    );
-    if (relRes.ok) {
-      const related: WPPost[] = await relRes.json();
-      if (related.length > 0) {
-        html = html.replace(
-          /<!-- MC_RELATED_START -->[\s\S]*?<!-- MC_RELATED_END -->/,
-          buildRelated(related)
-        );
-      }
+    // Fetch related posts and comments in parallel
+    const [relRes, commentsRes] = await Promise.all([
+      fetch(
+        `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,
+        { cache: 'no-store' }
+      ),
+      fetch(
+        `${WP_API}/comments?post=${post.id}&per_page=100&order=asc&status=approved&_fields=id,date,author_name,author_avatar_urls,content`,
+        { cache: 'no-store' }
+      ),
+    ]);
+
+    const [related, comments]: [WPPost[], WPComment[]] = await Promise.all([
+      relRes.ok ? relRes.json() : Promise.resolve([]),
+      commentsRes.ok ? commentsRes.json() : Promise.resolve([]),
+    ]);
+
+    // Inject comment section after article
+    html = html.replace('<!-- MC_POST_END -->', `<!-- MC_POST_END -->\n${buildCommentSection(comments, post.id)}`);
+
+    if (related.length > 0) {
+      html = html.replace(
+        /<!-- MC_RELATED_START -->[\s\S]*?<!-- MC_RELATED_END -->/,
+        buildRelated(related)
+      );
     }
   } catch (e) {
     console.error('[blog/slug] error:', e);
