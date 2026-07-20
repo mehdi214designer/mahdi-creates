@@ -18,7 +18,7 @@ async function fetchSlugs(postType: string): Promise<Array<{ slug: string; modif
   try {
     const res = await fetch(
       `${WP_API}/${postType}?per_page=100&_fields=slug,modified`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 300 } }
     );
     if (res.ok) return res.json() as Promise<Array<{ slug: string; modified: string }>>;
   } catch {
