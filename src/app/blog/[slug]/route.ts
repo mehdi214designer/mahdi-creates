@@ -270,7 +270,8 @@ export async function GET(
         );
       }
     }
-  } catch {
+  } catch (e) {
+    console.error('[blog/slug] error:', e);
     return serve404Response();
   }
 
