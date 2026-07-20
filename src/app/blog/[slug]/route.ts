@@ -256,6 +256,18 @@ export async function GET(
 <meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
 
+    // Replace hardcoded template og:image / twitter:image with the post's featured image
+    if (ogImg) {
+      html = html.replace(
+        /<meta property="og:image" content="(?!https:\/\/cms\.mahdicreates)[^"]*">/g,
+        `<meta property="og:image" content="${ogImg}">`
+      );
+      html = html.replace(
+        /<meta name="twitter:image" content="[^"]*">/g,
+        `<meta name="twitter:image" content="${ogImg}">`
+      );
+    }
+
     // Fetch related posts (exclude current)
     const relRes = await fetch(
       `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,
