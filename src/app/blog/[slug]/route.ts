@@ -337,16 +337,30 @@ export async function GET(
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
 <meta name="description" content="${desc}">
-<meta property="og:title" content="${ogTitle} | Mahdi Creates">
-<meta property="og:description" content="${desc}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}
+<meta property="og:type" content="article">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
 
-    // Replace hardcoded template og:image / twitter:image with the post's featured image
+    // Replace hardcoded template OG/Twitter tags with per-post values
+    html = html.replace(
+      /<meta property="og:title" content="[^"]*">/g,
+      `<meta property="og:title" content="${ogTitle} | Mahdi Creates">`
+    );
+    html = html.replace(
+      /<meta name="twitter:title" content="[^"]*">/g,
+      `<meta name="twitter:title" content="${ogTitle} | Mahdi Creates">`
+    );
+    html = html.replace(
+      /<meta property="og:description" content="[^"]*">/g,
+      `<meta property="og:description" content="${desc}">`
+    );
+    html = html.replace(
+      /<meta name="twitter:description" content="[^"]*">/g,
+      `<meta name="twitter:description" content="${desc}">`
+    );
     if (ogImg) {
       html = html.replace(
-        /<meta property="og:image" content="(?!https:\/\/cms\.mahdicreates)[^"]*">/g,
+        /<meta property="og:image" content="[^"]*">/g,
         `<meta property="og:image" content="${ogImg}">`
       );
       html = html.replace(
