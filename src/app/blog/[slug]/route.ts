@@ -59,8 +59,9 @@ const LI_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentCol
 
 const ARTICLE_CSS = `<style>
 .mc-article-header{padding:0!important;border-bottom:none!important;margin-bottom:0!important}
-.mc-a-body{max-width:800px!important;margin:0 auto}
-.mc-a-cover{max-width:800px;width:100%;display:block;margin:0 auto 48px;border-radius:20px;object-fit:cover;aspect-ratio:16/9}
+.mc-a-header-wrap{max-width:800px;margin:0 auto}
+.mc-a-body{width:100%}
+.mc-a-cover{width:100%;display:block;margin:0 auto 48px;border-radius:20px;object-fit:cover;aspect-ratio:16/9}
 .mc-a-title{margin:0 0 24px!important}
 .mc-back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:28px;transition:color .2s}
 .mc-back-link:hover{color:rgba(255,255,255,.75)}
@@ -73,13 +74,18 @@ const ARTICLE_CSS = `<style>
 .mc-author-avi{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;display:block}
 .mc-author-nm{font-size:14px;font-weight:600;color:rgba(255,255,255,.85)}
 .mc-author-sb{font-size:12px;color:rgba(255,255,255,.35)}
-.mc-toc{max-width:800px;margin:0 auto 36px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 24px}
+.mc-layout{display:flex;gap:48px;max-width:1080px;margin:0 auto;align-items:flex-start}
+.mc-content{flex:1;min-width:0;max-width:760px}
+.mc-toc-sidebar{width:232px;flex-shrink:0;position:sticky;top:88px;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:none}
+.mc-toc-sidebar::-webkit-scrollbar{display:none}
+.mc-toc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 24px}
 .mc-toc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:10px}
 .mc-toc-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
-.mc-toc-item a{font-size:14px;color:rgba(255,255,255,.55);text-decoration:none;line-height:1.5;display:block;transition:color .2s;padding:2px 0}
+.mc-toc-item a{font-size:13px;color:rgba(255,255,255,.5);text-decoration:none;line-height:1.5;display:block;transition:color .2s;padding:2px 0}
 .mc-toc-item a:hover{color:#ff6522}
-.mc-toc-h3 a{padding-left:16px;font-size:13px;color:rgba(255,255,255,.4)}
-.mc-share-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);margin:40px auto 0;max-width:800px}
+.mc-toc-h3 a{padding-left:14px;font-size:12px;color:rgba(255,255,255,.35)}
+@media(max-width:1100px){.mc-layout{flex-direction:column;max-width:800px}.mc-content{max-width:100%}.mc-toc-sidebar{width:100%;position:static;max-height:none}.mc-toc{margin-bottom:32px}}
+.mc-share-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);margin-top:40px}
 .mc-share-lbl{font-size:13px;font-weight:600;color:rgba(255,255,255,.4);margin-right:4px}
 .mc-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.55);text-decoration:none;cursor:pointer;transition:border-color .2s,color .2s;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:500}
 button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
@@ -232,27 +238,33 @@ function buildArticle(post: WPPost): string {
   return `<!-- MC_POST_START -->
 ${ARTICLE_CSS}
 <article>
-  <a class="mc-back-link" href="/blog">${BACK_SVG}Back to Blog</a>
-  <header class="mc-article-header">
-    <div class="mc-a-meta-row">
-      <span class="mc-a-cat-pill">${category}</span>
-      <span class="mc-meta-sep">·</span>
-      <span class="mc-meta-text">${formatDate(post.date)}</span>
-      <span class="mc-meta-sep">·</span>
-      <span class="mc-meta-text">${readTime(post.content.rendered)}</span>
+  <div class="mc-a-header-wrap">
+    <a class="mc-back-link" href="/blog">${BACK_SVG}Back to Blog</a>
+    <header class="mc-article-header">
+      <div class="mc-a-meta-row">
+        <span class="mc-a-cat-pill">${category}</span>
+        <span class="mc-meta-sep">·</span>
+        <span class="mc-meta-text">${formatDate(post.date)}</span>
+        <span class="mc-meta-sep">·</span>
+        <span class="mc-meta-text">${readTime(post.content.rendered)}</span>
+      </div>
+      <h1 class="mc-a-title">${post.title.rendered}</h1>
+      ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
+      <div class="mc-author-bar">
+        <img class="mc-author-avi" src="https://secure.gravatar.com/avatar/74b3cff15ccab2eafc5e0648238ad38be70977662de9220e914a8c098f332bf0?s=80&d=mp&r=g" alt="Md Mahdi Hasan">
+        <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer</div></div>
+      </div>
+    </header>
+    <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">
+  </div>
+  <div class="mc-layout">
+    <div class="mc-content">
+      <div class="mc-a-body">${modifiedContent}</div>
+      ${buildShareRow(encUrl, encTitle)}
+      ${buildArticleFooter()}
     </div>
-    <h1 class="mc-a-title">${post.title.rendered}</h1>
-    ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
-    <div class="mc-author-bar">
-      <img class="mc-author-avi" src="https://secure.gravatar.com/avatar/74b3cff15ccab2eafc5e0648238ad38be70977662de9220e914a8c098f332bf0?s=80&d=mp&r=g" alt="Md Mahdi Hasan">
-      <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer</div></div>
-    </div>
-  </header>
-  <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">
-  ${toc}
-  <div class="mc-a-body">${modifiedContent}</div>
-  ${buildShareRow(encUrl, encTitle)}
-  ${buildArticleFooter()}
+    ${toc ? `<aside class="mc-toc-sidebar">${toc}</aside>` : ''}
+  </div>
 </article>
 <!-- MC_POST_END -->`;
 }
