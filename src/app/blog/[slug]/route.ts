@@ -102,6 +102,9 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body .wp-block-button__link:hover{opacity:.85}
 .mc-a-body .wp-block-separator{border:none;border-top:1px solid rgba(255,255,255,.08);margin:40px 0}
 .mc-promo-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;margin:40px 0;overflow:hidden}
+.mc-a-body .schema-faq-section{margin-bottom:20px}
+.mc-a-body .schema-faq-question{color:rgba(255,255,255,.75)!important;font-size:14px!important;font-weight:600!important;display:block;margin-bottom:6px}
+.mc-a-body dt{color:rgba(255,255,255,.75)!important}
 </style>`;
 
 const COMMENT_CSS = `<style>
