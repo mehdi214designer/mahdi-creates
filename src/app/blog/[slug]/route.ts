@@ -443,7 +443,7 @@ export async function GET(
     return serve404Response();
   }
 
-  return new Response(applyNavFix(html), {
+  return new Response(applyNavFix(html, { mobileNav: true }), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',

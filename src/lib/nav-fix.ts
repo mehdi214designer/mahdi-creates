@@ -91,6 +91,85 @@ const BADGE_HIDE = `<style>
 a[data-framer-name="Primary"]{opacity:1!important;transform:translateY(0)!important}
 </style>`;
 
+// MC logo SVG extracted from Framer's mobile nav SSR output
+const MC_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" width="36" height="36" aria-hidden="true"><path d="M 2.355 42 C 1.055 42 0 40.945 0 39.645 L 0 2.355 C 0 1.055 1.055 0 2.355 0 L 39.645 0 C 40.945 0 42 1.055 42 2.355 L 42 39.645 C 42 40.945 40.945 42 39.645 42 Z" fill="rgb(255,102,34)"/><g transform="translate(4.045 10.131)"><path d="M 13.978 14.392 L 8.926 0.54 L 3.781 0.54 L 6.81 8.885 L 2.662 19.381 L 0 21.706 L 7.806 21.706 C 7.061 21.224 6.487 20.714 6.081 20.181 C 5.678 19.647 5.395 18.955 5.236 18.11 C 5.013 16.86 5.096 15.515 5.491 14.073 C 5.885 12.632 6.403 11.115 7.049 9.522 L 11.5 21.706 L 12.105 21.706 L 15.759 10.88 C 15.759 9.913 15.883 8.981 16.122 8.093 Z" fill="#fff"/><path d="M 33.949 15.663 C 33.766 16.671 33.459 17.586 33.025 18.414 C 32.59 19.238 32.001 19.915 31.255 20.441 C 30.67 20.843 30.008 21.166 29.271 21.409 C 28.534 21.647 27.693 21.771 26.745 21.771 C 26.219 21.771 25.705 21.735 25.203 21.663 C 24.27 21.532 23.374 21.281 22.509 20.907 C 21.545 20.493 20.664 19.967 19.875 19.33 C 19.576 19.091 19.289 18.836 19.014 18.566 C 18.014 17.578 17.225 16.42 16.64 15.086 C 16.054 13.756 15.759 12.347 15.759 10.854 L 15.759 10.838 C 15.759 9.87 15.883 8.938 16.122 8.05 C 16.257 7.537 16.424 7.067 16.624 6.605 C 17.197 5.287 17.978 4.137 18.967 3.157 C 19.094 3.03 19.226 2.91 19.357 2.791 C 20.258 1.987 21.29 1.338 22.449 0.844 C 23.78 0.283 25.203 0 26.717 0 C 27.665 0 28.586 0.104 29.486 0.319 C 30.383 0.529 31.303 0.784 32.252 1.087 L 32.252 7.74 C 31.829 7.398 31.367 6.964 30.861 6.438 C 30.355 5.916 29.821 5.375 29.259 4.822 C 28.693 4.268 28.096 3.735 27.47 3.221 C 26.844 2.707 26.211 2.289 25.565 1.963 C 24.92 1.644 24.262 1.457 23.597 1.405 C 22.931 1.354 22.266 1.521 21.601 1.903 C 20.915 2.289 20.397 2.883 20.043 3.687 C 19.975 3.842 19.911 4.005 19.859 4.173 C 19.628 4.861 19.513 5.634 19.513 6.486 C 19.513 7.545 19.68 8.684 20.011 9.902 C 20.345 11.12 20.855 12.335 21.541 13.545 C 22.206 14.755 22.951 15.834 23.78 16.782 C 24.143 17.196 24.501 17.57 24.868 17.913 C 25.338 18.363 25.812 18.749 26.291 19.079 C 27.139 19.665 27.98 20.031 28.817 20.182 C 29.654 20.333 30.419 20.218 31.104 19.836 C 31.769 19.473 32.268 18.928 32.602 18.203 C 32.933 17.475 33.18 16.631 33.343 15.663 Z" fill="#fff"/><path d="M 22.5 3.213 C 24.35 2.271 27.61 4.965 29.782 9.23 C 31.954 13.494 32.216 17.714 30.366 18.656 C 28.517 19.598 25.256 16.905 23.084 12.641 C 20.912 8.376 20.651 4.155 22.5 3.213 Z M 25.878 10.309 L 24.024 10.873 L 25.878 11.438 L 26.442 13.291 L 27.007 11.438 L 28.86 10.873 L 27.007 10.309 L 26.442 8.455 Z" fill="#fff"/></g></svg>`;
+
+// Resume link from Framer's mobile nav SSR
+const RESUME_LINK = 'https://drive.google.com/file/d/1L29kt0xJXP4UMTUZQgTG2FahUgz58l4Q/view?usp=sharing';
+
+/**
+ * Custom mobile hamburger nav for pages using the static blog-single.html template.
+ * Framer's mobile hamburger requires React hydration which isn't available on static
+ * template pages — the SSR only renders the Resume button fallback. This replaces it
+ * with a fully functional pure-HTML hamburger nav.
+ *
+ * Also fixes the triple-footer issue: the three footer variants (Desktop/md/lg) have
+ * their breakpoint CSS injected by Framer's JS bundles. If bundles are stale, all
+ * three render simultaneously. We hide two of them on mobile.
+ */
+function buildMobileNavHTML(): string {
+  return `<style>
+#mc-m-nav{display:none;position:fixed;top:0;left:0;right:0;z-index:10000;height:64px;background:rgba(9,9,11,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);align-items:center;justify-content:space-between;padding:0 20px;box-sizing:border-box}
+#mc-m-toggle{background:none;border:none;cursor:pointer;padding:10px;display:flex;align-items:center;justify-content:center;margin:-10px}
+#mc-m-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(9,9,11,0.98);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px 48px;box-sizing:border-box;overflow-y:auto}
+#mc-m-overlay.mc-open{display:flex}
+#mc-m-close{position:absolute;top:16px;right:14px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.5);font-size:22px;padding:10px;line-height:1;font-family:sans-serif}
+#mc-m-links{display:flex;flex-direction:column;align-items:center;width:100%;gap:0}
+#mc-m-links a{display:block;color:rgba(255,255,255,0.8);text-decoration:none;font-size:18px;font-weight:500;padding:14px 0;width:100%;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-0.01em;border-bottom:1px solid rgba(255,255,255,0.06);transition:color 0.15s}
+#mc-m-links a:first-child{border-top:1px solid rgba(255,255,255,0.06)}
+#mc-m-links a:hover,#mc-m-links a:active{color:#ff6622}
+#mc-m-resume{margin-top:28px;display:inline-flex;align-items:center;justify-content:center;padding:12px 36px;border:1px solid rgba(255,255,255,0.2);border-radius:52px;color:rgb(237,238,241);text-decoration:none;font-size:14px;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:inset 0 0 14px rgba(255,255,255,0.5);background:transparent;flex-shrink:0}
+@media(max-width:809px){
+  #mc-m-nav{display:flex}
+  /* Hide broken Framer mobile nav — the hamburger component requires React hydration
+     which is unavailable on static template pages, leaving only the Resume fallback */
+  .hidden-1qi9knc.hidden-1z3mgk.hidden-1es992z.hidden-aiog3o{display:none!important}
+  /* Footer: hide two of three variants on mobile since their breakpoint CSS comes
+     from Framer's JS bundles and may not load on static template pages */
+  .ssr-variant.hidden-11i8y7r.hidden-72rtr7,
+  .ssr-variant.hidden-1g6a80v.hidden-72rtr7{display:none!important}
+  /* Contain the remaining footer variant to prevent horizontal overflow */
+  .framer-v-19xfg6h,.framer-v-1kdrjlc,.framer-v-1wlma7m{overflow-x:hidden!important;max-width:100vw!important}
+}
+</style>
+<div id="mc-m-nav" aria-label="Mobile navigation">
+  <a href="/" aria-label="Mahdi Creates – Home" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0">${MC_LOGO_SVG}</a>
+  <button id="mc-m-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mc-m-overlay">
+    <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 1h20M1 8h20M1 15h20" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+</div>
+<div id="mc-m-overlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
+  <button id="mc-m-close" aria-label="Close navigation menu">&#x2715;</button>
+  <nav id="mc-m-links" aria-label="Site navigation">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/projects">Projects</a>
+    <a href="/case-studies">Case Studies</a>
+    <a href="/blog">Blog</a>
+    <a href="/resources">Resources</a>
+    <a href="/contact">Contact</a>
+  </nav>
+  <a id="mc-m-resume" href="${RESUME_LINK}" target="_blank" rel="noopener">Resume</a>
+</div>
+<script>
+(function(){
+  var overlay=document.getElementById('mc-m-overlay');
+  var toggle=document.getElementById('mc-m-toggle');
+  var close=document.getElementById('mc-m-close');
+  if(!toggle||!close||!overlay) return;
+  function openNav(){overlay.classList.add('mc-open');toggle.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeNav(){overlay.classList.remove('mc-open');toggle.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  toggle.addEventListener('click',openNav);
+  close.addEventListener('click',closeNav);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closeNav();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
+  document.querySelectorAll('#mc-m-links a').forEach(function(a){
+    a.addEventListener('click',function(){if(a.getAttribute('target')!=='_blank')closeNav();});
+  });
+})();
+</script>`;
+}
+
 const GA4_ID = 'G-KE2YS6JJ8M';
 
 const GA4_SCRIPT = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>`;
@@ -184,9 +263,15 @@ body,html{max-width:100%;overflow-x:hidden}
 </script>`;
 }
 
-/** Inject GA4, accessibility fixes, nav fix script, and hide Framer badge before </body> */
-export function applyNavFix(html: string): string {
-  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + '</body>');
+/**
+ * Inject GA4, accessibility fixes, nav fix script, and hide Framer badge before </body>.
+ * Pass { mobileNav: true } for pages using the static blog-single.html template —
+ * those pages need a custom hamburger nav because Framer's mobile nav component
+ * requires React hydration that isn't available on static template pages.
+ */
+export function applyNavFix(html: string, opts: { mobileNav?: boolean } = {}): string {
+  const extra = opts.mobileNav ? buildMobileNavHTML() : '';
+  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + extra + '</body>');
 }
 
 /** Return a styled 404 Response using the Framer 404 page snapshot */
