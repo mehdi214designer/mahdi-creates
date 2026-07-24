@@ -134,10 +134,13 @@ function buildA11yScript(): string {
 
 function buildNavInjectScript(): string {
   return `<style>
-/* Expand right nav container so added Contact link doesn't clip Resume */
-.framer-1d8j9t5{width:auto!important}
-/* Ensure left nav also sizes to content */
-.framer-nmxeya{width:auto!important}
+/* Only expand nav containers on desktop — mobile uses hamburger layout */
+@media(min-width:900px){
+  .framer-1d8j9t5{width:auto!important}
+  .framer-nmxeya{width:auto!important}
+}
+/* Prevent horizontal overflow on mobile (footer clipping) */
+body,html{max-width:100%;overflow-x:hidden}
 </style>
 <script>
 (function(){
