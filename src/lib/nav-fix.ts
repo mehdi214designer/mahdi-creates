@@ -268,24 +268,38 @@ body,html{max-width:100%;overflow-x:hidden}
 <script>
 (function(){
   function injectNavLinks(){
-    // Add "Resources" after "Case Studies"
-    // Clone an existing <a> nav link (Home) so it shares the same class/padding as other nav items
-    document.querySelectorAll('[data-framer-name="Case Studies"]').forEach(function(cs){
-      var outer=cs.parentNode; // framer-13yt27x
-      var navCont=outer&&outer.parentNode; // framer-nmxeya
-      if(!navCont)return;
-      var paras=navCont.querySelectorAll('p.framer-text');
-      for(var i=0;i<paras.length;i++){if((paras[i].textContent||'').trim()==='Resources')return;}
-      if(navCont.querySelector('[href="/resources"]'))return;
-      // Use Home <a> as the template (no page-current marker, same CSS as all nav links)
-      var tmpl=navCont.querySelector('a[href="/"]');
-      if(!tmpl)return;
-      var res=tmpl.cloneNode(true);
-      res.href='/resources';
-      res.removeAttribute('data-framer-appear-id');
-      var tx=res.querySelector('p.framer-text');if(tx)tx.textContent='Resources';
-      outer.insertAdjacentElement('afterend',res);
-    });
+    // Add "Resources" — try two strategies:
+    // 1. Blog-single pages: left nav has individual links, clone Home link after Case Studies
+    // 2. Index pages: left nav is one collapsed <a>, so inject into right nav (framer-1d8j9t5)
+    if(!document.querySelector('a[href="/resources"]')){
+      // Strategy 1: blog-single.html left nav
+      var inserted=false;
+      document.querySelectorAll('[data-framer-name="Case Studies"]').forEach(function(cs){
+        if(inserted)return;
+        var outer=cs.parentNode;
+        var navCont=outer&&outer.parentNode;
+        if(!navCont)return;
+        var tmpl=navCont.querySelector('a[href="/"]');
+        if(!tmpl)return;
+        var res=tmpl.cloneNode(true);
+        res.href='/resources';
+        res.removeAttribute('data-framer-appear-id');
+        var tx=res.querySelector('p.framer-text');if(tx)tx.textContent='Resources';
+        outer.insertAdjacentElement('afterend',res);
+        inserted=true;
+      });
+      // Strategy 2: index pages — inject into the right-side nav container
+      if(!inserted){
+        var contact=document.querySelector('a.framer-vuapxt[href="/contact"]');
+        if(contact&&contact.parentNode){
+          var res2=contact.cloneNode(true);
+          res2.href='/resources';
+          res2.removeAttribute('data-framer-appear-id');
+          var el=res2.firstElementChild;if(el)el.textContent='Resources';
+          contact.parentNode.insertBefore(res2,contact);
+        }
+      }
+    }
 
     // Add "Contact" before each Blogs link
     document.querySelectorAll('a.framer-vuapxt[href="/blog"],a.framer-vuapxt[href="/insights"]').forEach(function(blogs){
