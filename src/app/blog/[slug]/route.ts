@@ -297,6 +297,16 @@ ${ARTICLE_CSS}
   window.addEventListener('scroll',update,{passive:true});
   setTimeout(update,200);
 })();</script>
+<script>(function(){
+  var s=document.querySelector('.mc-toc-sidebar');
+  if(!s)return;
+  var p=s.parentElement;
+  while(p&&p!==document.documentElement){
+    var ov=getComputedStyle(p).overflow;
+    if(ov==='clip'||ov==='hidden'){p.style.setProperty('overflow','visible','important');}
+    p=p.parentElement;
+  }
+})();</script>
 <!-- MC_POST_END -->`;
 }
 
