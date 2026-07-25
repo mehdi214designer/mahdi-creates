@@ -156,9 +156,6 @@ function buildSSRVariantCSS(): string {
 @media(min-width:1440px) and (max-width:1919.98px){.ssr-variant.hidden-1es992z{display:none!important}}
 @media(min-width:810px) and (max-width:1439.98px){.ssr-variant.hidden-1z3mgk{display:none!important}}
 @media(max-width:809.98px){.ssr-variant.hidden-lyfgxj{display:none!important}}
-/* The old nav has a variant (hidden-1qi9knc hidden-aiog3o) that shows at 1440-1919px
-   because it lacks the hidden-1es992z class — patch the gap explicitly */
-@media(min-width:1440px) and (max-width:1919.98px){.ssr-variant.hidden-1qi9knc.hidden-aiog3o{display:none!important}}
 /* Older class names (blog-single.html) */
 @media(min-width:1440px){.ssr-variant.hidden-1g6a80v{display:none!important}}
 @media(min-width:810px) and (max-width:1439.98px){.ssr-variant.hidden-11i8y7r{display:none!important}}
