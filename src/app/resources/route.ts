@@ -143,7 +143,7 @@ export async function GET() {
     // serve static fallback
   }
 
-  return new Response(applyNavFix(html), {
+  return new Response(applyNavFix(html, { mobileNav: true }), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=300',
