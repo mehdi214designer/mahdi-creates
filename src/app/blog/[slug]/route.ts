@@ -300,6 +300,12 @@ ${ARTICLE_CSS}
 <script>(function(){
   var s=document.querySelector('.mc-toc-sidebar');
   if(!s)return;
+  // Framer sets body to overflow:hidden auto, making it a non-scrolling scroll container
+  // that traps position:sticky. The actual page scroll is on <html>, not body.
+  // overflow:clip clips visually but does NOT create a scroll container, so sticky
+  // skips body and binds to <html> (which is actually scrolling).
+  document.body.style.setProperty('overflow','clip','important');
+  // Also clear any overflow:clip on Framer wrapper divs between the TOC and body
   var p=s.parentElement;
   while(p&&p!==document.documentElement){
     var ov=getComputedStyle(p).overflow;
