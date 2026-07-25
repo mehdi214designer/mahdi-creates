@@ -43,12 +43,8 @@ export async function fetchFramerPage(
       headers: { Accept: 'text/html', 'User-Agent': 'MahdiCreates-Bot/1.0' },
     });
 
-    // Framer returns 404 HTTP status even for valid pages (SPA routing) — accept any HTML body
-    const html = await res.text();
-    if (html.trimStart().startsWith('<!doctype') || html.trimStart().startsWith('<html')) {
-      return fixCanonical(html, nextPath);
-    }
-    console.warn(`[framer-fetch] ${url} returned ${res.status} with no HTML, using fallback`);
+    if (res.ok) return fixCanonical(await res.text(), nextPath);
+    console.warn(`[framer-fetch] ${url} returned ${res.status}, using fallback`);
   } catch (err) {
     console.warn(`[framer-fetch] fetch failed for ${url}:`, err);
   }
