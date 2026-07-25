@@ -2,7 +2,6 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { NextRequest } from 'next/server';
 import { applyNavFix, serve404Response } from '@/lib/nav-fix';
-import { buildArticleFooter } from '@/lib/subscribe-box';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
@@ -265,7 +264,6 @@ ${ARTICLE_CSS}
     <div class="mc-content">
       <div class="mc-a-body">${modifiedContent}</div>
       ${buildShareRow(encUrl, encTitle)}
-      ${buildArticleFooter()}
     </div>
     ${toc ? `<aside class="mc-toc-sidebar">${toc}</aside>` : ''}
   </div>
