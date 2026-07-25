@@ -277,24 +277,31 @@ body,html{max-width:100%;overflow-x:hidden}
 <script>
 (function(){
   function injectNavLinks(){
-    // Insert "Resources" only if not already present (Framer may use absolute URLs).
-    // Check both relative and absolute href forms.
+    // ── Resources inject ──────────────────────────────────────────────────────
+    // Framer's React hydration converts <div.framer-nmxeya> (left nav group)
+    // into <a.framer-nmxeya href="/case-studies">.  If we naively clone that
+    // element we duplicate the whole group.  Detect and fix that case.
     var hasRes=document.querySelector('a[href="/resources"],a[href$="/resources"],a[href*="mahdicreates.com/resources"]');
+    // Remove a previously inserted wrong clone (outer nav group cloned as Resources)
+    if(hasRes&&hasRes.classList.contains('framer-nmxeya')){hasRes.remove();hasRes=null;}
     if(!hasRes){
-      // Clone Case Studies link — inherits Framer's exact styles and classes
+      var logo=document.querySelector('a.framer-8y9pe2');
       var cs=document.querySelector('a[href="/case-studies"],a[href$="/case-studies"],a[href*="mahdicreates.com/case-studies"]');
-      if(cs&&cs.parentNode){
-        var res=cs.cloneNode(true);
+      // cs may be the whole nav group — use Projects link as clone template instead
+      var tmpl=cs&&!cs.classList.contains('framer-nmxeya')?cs:document.querySelector('a.framer-tgw0t1');
+      if(tmpl&&logo&&logo.parentNode){
+        var res=tmpl.cloneNode(true);
         res.href='/resources';
         res.removeAttribute('data-framer-appear-id');
         var tx=res.querySelector('p.framer-text');
         if(tx){tx.textContent='Resources';}
-        else{res.querySelectorAll('span,div').forEach(function(n){if((n.textContent||'').trim()==='Case Studies')n.textContent='Resources';});}
-        cs.insertAdjacentElement('afterend',res);
+        else{res.querySelectorAll('span,div').forEach(function(n){var t=(n.textContent||'').trim();if(t==='Case Studies'||t==='Projects')n.textContent='Resources';});}
+        // Place Resources right before the logo (between left nav group and logo)
+        logo.parentNode.insertBefore(res,logo);
       }
     }
 
-    // Add "Contact" before each Blogs link
+    // ── Contact inject ────────────────────────────────────────────────────────
     document.querySelectorAll('a.framer-vuapxt[href="/blog"],a.framer-vuapxt[href="/insights"]').forEach(function(blogs){
       var parent=blogs.parentNode;if(!parent)return;
       var paras2=parent.querySelectorAll('p.framer-text');
