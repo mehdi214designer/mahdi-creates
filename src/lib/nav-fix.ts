@@ -147,6 +147,14 @@ window.mcFooterSub=function(s){
 })();</script>`;
 }
 
+function buildSSRVariantCSS(): string {
+  return `<style>
+@media(min-width:1440px){.ssr-variant.hidden-1g6a80v{display:none!important}}
+@media(min-width:810px) and (max-width:1439.98px){.ssr-variant.hidden-11i8y7r{display:none!important}}
+@media(max-width:809px){.ssr-variant.hidden-72rtr7{display:none!important}}
+</style>`;
+}
+
 function buildMobileNavHTML(): string {
   return `<style>
 #mc-m-nav{display:none;position:fixed;top:0;left:0;right:0;z-index:10000;height:64px;background:rgba(9,9,11,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);align-items:center;justify-content:space-between;padding:0 20px;box-sizing:border-box}
@@ -159,21 +167,11 @@ function buildMobileNavHTML(): string {
 #mc-m-links a:first-child{border-top:1px solid rgba(255,255,255,0.06)}
 #mc-m-links a:hover,#mc-m-links a:active{color:#ff6622}
 #mc-m-resume{margin-top:28px;display:inline-flex;align-items:center;justify-content:center;padding:12px 36px;border:1px solid rgba(255,255,255,0.2);border-radius:52px;color:rgb(237,238,241);text-decoration:none;font-size:14px;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:inset 0 0 14px rgba(255,255,255,0.5);background:transparent;flex-shrink:0}
-/* Framer component SSR variants: the blog-single.html static template doesn't load
-   Framer's JS bundle, so the component-level breakpoint CSS is missing. These rules
-   replicate it: hidden-1g6a80v=desktop, hidden-11i8y7r=tablet, hidden-72rtr7=mobile */
-@media(min-width:1440px){
-  .ssr-variant.hidden-1g6a80v{display:none!important}
-}
-@media(min-width:810px) and (max-width:1439.98px){
-  .ssr-variant.hidden-11i8y7r{display:none!important}
-}
 @media(max-width:809px){
   #mc-m-nav{display:flex}
   /* Hide broken Framer mobile nav — the hamburger component requires React hydration
      which is unavailable on static template pages, leaving only the Resume fallback */
   .hidden-1qi9knc.hidden-1z3mgk.hidden-1es992z.hidden-aiog3o{display:none!important}
-  .ssr-variant.hidden-72rtr7{display:none!important}
   /* Contain the remaining footer variant to prevent horizontal overflow */
   .framer-v-19xfg6h,.framer-v-1kdrjlc,.framer-v-1wlma7m{overflow-x:hidden!important;max-width:100vw!important}
 }
@@ -316,8 +314,9 @@ body,html{max-width:100%;overflow-x:hidden}
  * requires React hydration that isn't available on static template pages.
  */
 export function applyNavFix(html: string, opts: { mobileNav?: boolean } = {}): string {
-  const extra = opts.mobileNav ? buildMobileNavHTML() + buildNewsletterFormScript() : '';
-  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + extra + '</body>');
+  const mobileNav = opts.mobileNav ? buildMobileNavHTML() : '';
+  const always = buildSSRVariantCSS() + buildNewsletterFormScript();
+  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }
 
 /** Return a styled 404 Response using the Framer 404 page snapshot */
