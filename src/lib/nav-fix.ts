@@ -282,22 +282,25 @@ body,html{max-width:100%;overflow-x:hidden}
     // into <a.framer-nmxeya href="/case-studies">.  If we naively clone that
     // element we duplicate the whole group.  Detect and fix that case.
     var hasRes=document.querySelector('a[href="/resources"],a[href$="/resources"],a[href*="mahdicreates.com/resources"]');
-    // Remove a previously inserted wrong clone (outer nav group cloned as Resources)
-    if(hasRes&&hasRes.classList.contains('framer-nmxeya')){hasRes.remove();hasRes=null;}
+    // Remove bad clones: outer nav group as Resources, OR stray sibling-of-logo clone
+    if(hasRes){
+      var bad=hasRes.classList.contains('framer-nmxeya')||
+              !!(hasRes.parentElement&&hasRes.parentElement.classList.contains('framer-13oizls'));
+      if(bad){hasRes.remove();hasRes=null;}
+    }
     if(!hasRes){
-      var logo=document.querySelector('a.framer-8y9pe2');
-      var cs=document.querySelector('a[href="/case-studies"],a[href$="/case-studies"],a[href*="mahdicreates.com/case-studies"]');
-      // cs may be the whole nav group — use Projects link as clone template instead
-      var tmpl=cs&&!cs.classList.contains('framer-nmxeya')?cs:document.querySelector('a.framer-tgw0t1');
-      if(tmpl&&logo&&logo.parentNode){
-        var res=tmpl.cloneNode(true);
+      // Target INNER nav-links div (div.framer-nmxeya inside the anchor group)
+      var navLinksDiv=document.querySelector('a.framer-nmxeya div.framer-nmxeya')||document.querySelector('div.framer-nmxeya');
+      var proj=navLinksDiv?navLinksDiv.querySelector('a.framer-tgw0t1'):null;
+      if(navLinksDiv&&proj){
+        var res=proj.cloneNode(true);
         res.href='/resources';
         res.removeAttribute('data-framer-appear-id');
         var tx=res.querySelector('p.framer-text');
         if(tx){tx.textContent='Resources';}
-        else{res.querySelectorAll('span,div').forEach(function(n){var t=(n.textContent||'').trim();if(t==='Case Studies'||t==='Projects')n.textContent='Resources';});}
-        // Place Resources right before the logo (between left nav group and logo)
-        logo.parentNode.insertBefore(res,logo);
+        else{res.querySelectorAll('span,div').forEach(function(n){if((n.textContent||'').trim()==='Projects')n.textContent='Resources';});}
+        // Append after Case Studies inside the nav-links flex row
+        navLinksDiv.appendChild(res);
       }
     }
 
