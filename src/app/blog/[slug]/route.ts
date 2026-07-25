@@ -396,7 +396,46 @@ export async function GET(
 <meta name="description" content="${desc}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="article">
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<style>.framer-1qbjvo8,.framer-hvaq4g{display:none!important}</style>`);
+
+    // Inject labeled newsletter form (replaces Framer compact widget visually via JS)
+    html = html.replace('</body>', `<script>(function(){
+var subs=document.querySelectorAll('.framer-i97j3q');
+if(!subs.length)return;
+var ids=['d','t','m'];
+subs.forEach(function(sub,i){
+  var s=ids[i]||String(i);
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;width:100%;margin-top:16px';
+  wrap.innerHTML='<p style="margin:0 0 4px;font-family:\\'Zalando Sans Expanded\\',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.04em">Newsletter</p>'
+    +'<p style="margin:0 0 14px;font-family:\\'Zalando Sans Expanded\\',sans-serif;font-size:13px;color:rgba(255,255,255,.35);line-height:1.5">Design notes, UX ideas, and case-study drops.</p>'
+    +'<input id="mc-fe-'+s+'" type="email" placeholder="you@example.com" autocomplete="email" style="display:block;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 16px;color:#fff;font-size:15px;font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:12px;-webkit-appearance:none;appearance:none;transition:border-color .2s">'
+    +'<button id="mc-fb-'+s+'" type="button" onclick="mcFooterSub(\\''+s+'\\')" style="display:block;width:100%;padding:14px;background:#ff6522;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s">Subscribe</button>'
+    +'<div id="mc-fm-'+s+'" style="display:none;margin-top:12px;padding:12px 14px;border-radius:8px;font-size:13px;font-family:inherit"></div>';
+  sub.parentElement.insertBefore(wrap,sub.nextSibling);
+});
+window.mcFooterSub=function(s){
+  var btn=document.getElementById('mc-fb-'+s),msg=document.getElementById('mc-fm-'+s),inp=document.getElementById('mc-fe-'+s);
+  if(!btn||!inp)return;
+  var email=inp.value.trim();if(!email){inp.focus();return;}
+  btn.disabled=true;btn.textContent='Subscribing…';msg.style.display='none';
+  fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.success){
+        msg.style.cssText=msg.style.cssText+'display:block;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#4ade80';
+        msg.textContent='✓ Subscribed! Check your inbox.';inp.value='';btn.style.display='none';
+      }else{
+        msg.style.cssText=msg.style.cssText+'display:block;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171';
+        msg.textContent=d.error||'Something went wrong.';btn.disabled=false;btn.textContent='Subscribe';
+      }
+    }).catch(function(){
+      msg.style.cssText=msg.style.cssText+'display:block;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171';
+      msg.textContent='Network error. Please try again.';btn.disabled=false;btn.textContent='Subscribe';
+    });
+};
+})();</script></body>`);
 
     // Replace hardcoded template OG/Twitter tags with per-post values
     html = html.replace(
