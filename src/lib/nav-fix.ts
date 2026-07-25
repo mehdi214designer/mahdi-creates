@@ -149,6 +149,17 @@ window.mcFooterSub=function(s){
 
 function buildSSRVariantCSS(): string {
   return `<style>
+/* Framer breakpoint fix — class names vary by page/version, cover known sets */
+/* Old fallback files (blog.html etc.) — 5-breakpoint set */
+@media(min-width:2510px){.ssr-variant.hidden-1qi9knc{display:none!important}}
+@media(min-width:1920px) and (max-width:2509.98px){.ssr-variant.hidden-aiog3o{display:none!important}}
+@media(min-width:1440px) and (max-width:1919.98px){.ssr-variant.hidden-1es992z{display:none!important}}
+@media(min-width:810px) and (max-width:1439.98px){.ssr-variant.hidden-1z3mgk{display:none!important}}
+@media(max-width:809.98px){.ssr-variant.hidden-lyfgxj{display:none!important}}
+/* The old nav has a variant (hidden-1qi9knc hidden-aiog3o) that shows at 1440-1919px
+   because it lacks the hidden-1es992z class — patch the gap explicitly */
+@media(min-width:1440px) and (max-width:1919.98px){.ssr-variant.hidden-1qi9knc.hidden-aiog3o{display:none!important}}
+/* Older class names (blog-single.html) */
 @media(min-width:1440px){.ssr-variant.hidden-1g6a80v{display:none!important}}
 @media(min-width:810px) and (max-width:1439.98px){.ssr-variant.hidden-11i8y7r{display:none!important}}
 @media(max-width:809px){.ssr-variant.hidden-72rtr7{display:none!important}}
