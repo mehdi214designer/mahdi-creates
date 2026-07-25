@@ -269,12 +269,12 @@ body,html{max-width:100%;overflow-x:hidden}
 <script>
 (function(){
   function injectNavLinks(){
-    // Insert "Resources" into the LEFT nav, right after Case Studies.
-    // Clone the Case Studies <a> so the link inherits Framer's exact styles.
-    // Works on single pages (SSR has individual <a> tags) and index pages
-    // (individual tags appear after Framer JS hydrates — caught by the retry timers).
-    if(!document.querySelector('a[href="/resources"]')){
-      var cs=document.querySelector('a[href="/case-studies"]');
+    // Insert "Resources" only if not already present (Framer may use absolute URLs).
+    // Check both relative and absolute href forms.
+    var hasRes=document.querySelector('a[href="/resources"],a[href$="/resources"],a[href*="mahdicreates.com/resources"]');
+    if(!hasRes){
+      // Clone Case Studies link — inherits Framer's exact styles and classes
+      var cs=document.querySelector('a[href="/case-studies"],a[href$="/case-studies"],a[href*="mahdicreates.com/case-studies"]');
       if(cs&&cs.parentNode){
         var res=cs.cloneNode(true);
         res.href='/resources';
