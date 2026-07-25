@@ -155,27 +155,59 @@ function buildSSRVariantCSS(): string {
 </style>`;
 }
 
-function buildMobileNavHTML(): string {
+function buildCustomNav(): string {
+  const FF = `-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
   return `<style>
+/* Hide Framer's original nav on all pages — replaced by #mc-nav below */
+.framer-3zrdlk{display:none!important}
+/* Hide broken Framer fallback mobile nav (Resume-only button) */
+.hidden-1qi9knc.hidden-1z3mgk.hidden-1es992z.hidden-aiog3o{display:none!important}
+/* Prevent footer horizontal overflow on narrow viewports */
+.framer-v-19xfg6h,.framer-v-1kdrjlc,.framer-v-1wlma7m{overflow-x:hidden!important;max-width:100vw!important}
+
+/* ── Desktop nav ────────────────────────────────── */
+#mc-nav{position:fixed;top:0;left:0;right:0;z-index:10000;height:64px;background:rgba(9,9,11,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;padding:0 48px;box-sizing:border-box}
+#mc-nav-left,#mc-nav-right{display:flex;align-items:center;gap:28px}
+.mc-nav-a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:14px;font-weight:400;font-family:${FF};white-space:nowrap;transition:color .15s}
+.mc-nav-a:hover{color:#fff}
+#mc-nav-logo{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;text-decoration:none}
+#mc-nav-resume{padding:8px 18px;border-radius:100px;border:1px solid rgba(255,255,255,0.18);background:rgba(30,30,30,0.6);color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;font-family:${FF};box-shadow:inset 0 0 10px rgba(255,255,255,0.3);white-space:nowrap;transition:background .15s}
+#mc-nav-resume:hover{background:rgba(255,255,255,0.1)}
+
+/* ── Mobile nav ────────────────────────────────── */
 #mc-m-nav{display:none;position:fixed;top:0;left:0;right:0;z-index:10000;height:64px;background:rgba(9,9,11,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);align-items:center;justify-content:space-between;padding:0 20px;box-sizing:border-box}
 #mc-m-toggle{background:none;border:none;cursor:pointer;padding:10px;display:flex;align-items:center;justify-content:center;margin:-10px}
 #mc-m-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(9,9,11,0.98);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px 48px;box-sizing:border-box;overflow-y:auto}
 #mc-m-overlay.mc-open{display:flex}
 #mc-m-close{position:absolute;top:16px;right:14px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.5);font-size:22px;padding:10px;line-height:1;font-family:sans-serif}
 #mc-m-links{display:flex;flex-direction:column;align-items:center;width:100%;gap:0}
-#mc-m-links a{display:block;color:rgba(255,255,255,0.8);text-decoration:none;font-size:18px;font-weight:500;padding:14px 0;width:100%;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-0.01em;border-bottom:1px solid rgba(255,255,255,0.06);transition:color 0.15s}
+#mc-m-links a{display:block;color:rgba(255,255,255,0.8);text-decoration:none;font-size:18px;font-weight:500;padding:14px 0;width:100%;text-align:center;font-family:${FF};letter-spacing:-0.01em;border-bottom:1px solid rgba(255,255,255,0.06);transition:color 0.15s}
 #mc-m-links a:first-child{border-top:1px solid rgba(255,255,255,0.06)}
-#mc-m-links a:hover,#mc-m-links a:active{color:#ff6622}
-#mc-m-resume{margin-top:28px;display:inline-flex;align-items:center;justify-content:center;padding:12px 36px;border:1px solid rgba(255,255,255,0.2);border-radius:52px;color:rgb(237,238,241);text-decoration:none;font-size:14px;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:inset 0 0 14px rgba(255,255,255,0.5);background:transparent;flex-shrink:0}
-@media(max-width:809px){
-  #mc-m-nav{display:flex}
-  /* Hide broken Framer mobile nav — the hamburger component requires React hydration
-     which is unavailable on static template pages, leaving only the Resume fallback */
-  .hidden-1qi9knc.hidden-1z3mgk.hidden-1es992z.hidden-aiog3o{display:none!important}
-  /* Contain the remaining footer variant to prevent horizontal overflow */
-  .framer-v-19xfg6h,.framer-v-1kdrjlc,.framer-v-1wlma7m{overflow-x:hidden!important;max-width:100vw!important}
-}
+#mc-m-links a:hover,#mc-m-links a:active{color:#ff6522}
+#mc-m-resume{margin-top:28px;display:inline-flex;align-items:center;justify-content:center;padding:12px 36px;border:1px solid rgba(255,255,255,0.2);border-radius:52px;color:rgb(237,238,241);text-decoration:none;font-size:14px;font-weight:500;font-family:${FF};box-shadow:inset 0 0 14px rgba(255,255,255,0.5);background:transparent;flex-shrink:0}
+
+@media(min-width:810px){#mc-m-nav{display:none!important}}
+@media(max-width:809px){#mc-nav{display:none!important}#mc-m-nav{display:flex!important}}
 </style>
+
+<!-- Desktop nav -->
+<nav id="mc-nav" role="navigation" aria-label="Site navigation">
+  <div id="mc-nav-left">
+    <a href="/" class="mc-nav-a">Home</a>
+    <a href="/projects" class="mc-nav-a">Projects</a>
+    <a href="/case-studies" class="mc-nav-a">Case Studies</a>
+    <a href="/resources" class="mc-nav-a">Resources</a>
+  </div>
+  <a id="mc-nav-logo" href="/" aria-label="Mahdi Creates – Home">${MC_LOGO_SVG}</a>
+  <div id="mc-nav-right">
+    <a href="/contact" class="mc-nav-a">Contact</a>
+    <a href="/blog" class="mc-nav-a">Blogs</a>
+    <a href="/about" class="mc-nav-a">About Me</a>
+    <a id="mc-nav-resume" href="${RESUME_LINK}" target="_blank" rel="noopener">Resume</a>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
 <div id="mc-m-nav" aria-label="Mobile navigation">
   <a href="/" aria-label="Mahdi Creates – Home" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0">${MC_LOGO_SVG}</a>
   <button id="mc-m-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mc-m-overlay">
@@ -321,16 +353,11 @@ body,html{max-width:100%;overflow-x:hidden}
 </script>`;
 }
 
-/**
- * Inject GA4, accessibility fixes, nav fix script, and hide Framer badge before </body>.
- * Pass { mobileNav: true } for pages using the static blog-single.html template —
- * those pages need a custom hamburger nav because Framer's mobile nav component
- * requires React hydration that isn't available on static template pages.
- */
+/** Inject GA4, accessibility fixes, custom nav, and SSR/newsletter fixes before </body>. */
 export function applyNavFix(html: string, opts: { mobileNav?: boolean } = {}): string {
-  const mobileNav = opts.mobileNav ? buildMobileNavHTML() : '';
+  void opts; // mobileNav param kept for call-site compat; custom nav is always injected
   const always = buildSSRVariantCSS() + buildNewsletterFormScript();
-  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
+  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + buildCustomNav() + always + '</body>');
 }
 
 /** Return a styled 404 Response using the Framer 404 page snapshot */
