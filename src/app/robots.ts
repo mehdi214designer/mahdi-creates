@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/admin'],
     },
-    sitemap: 'https://mahdicreates.com/sitemap.xml',
+    sitemap: 'https://www.mahdicreates.com/sitemap.xml',
   };
 }

@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const BASE = 'https://mahdicreates.com';
+const BASE = 'https://www.mahdicreates.com';
 
 const STATIC_PAGES: MetadataRoute.Sitemap = [
   { url: BASE, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },

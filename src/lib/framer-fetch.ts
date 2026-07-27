@@ -14,12 +14,45 @@ const FRAMER_PATH_MAP: Record<string, string> = {
   '/resources': '/resources',
 };
 
+const KEYWORDS_META = `<meta name="keywords" content="UI UX designer, UX designer portfolio, web design, design systems, Mahdi Creates, Md Mahdi Hasan, high-conversion web design">`;
+
+// Site-level JSON-LD: Person + WebSite entities (Publisher fixes "Publisher: Missing" in SEO tools)
+const BASE_JSON_LD = `<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://www.mahdicreates.com/#person","name":"Md Mahdi Hasan","alternateName":"Mahdi Creates","url":"https://www.mahdicreates.com","jobTitle":"UI/UX Designer","description":"Award-winning UI/UX Designer with 9+ years of experience in strategic, high-conversion web design and design systems for global brands."},{"@type":"WebSite","@id":"https://www.mahdicreates.com/#website","url":"https://www.mahdicreates.com","name":"Mahdi Creates","publisher":{"@id":"https://www.mahdicreates.com/#person"}}]}</script>`;
+
+function trimDescriptionMeta(html: string): string {
+  const MAX = 155;
+  function trim(value: string): string {
+    if (value.length <= MAX) return value;
+    const cut = value.slice(0, MAX + 1).replace(/\s+\S*$/, '');
+    return (cut || value.slice(0, MAX)) + '…';
+  }
+  return html.replace(/<meta\b([^>]+)>/gi, (fullTag, attrs) => {
+    const isDesc = /\b(?:name|property)="(?:description|og:description|twitter:description)"/i.test(attrs);
+    if (!isDesc) return fullTag;
+    return fullTag.replace(/(\bcontent=")([^"]+)(")/, (_, pre, val, suf) => `${pre}${trim(val)}${suf}`);
+  });
+}
+
 function fixCanonical(html: string, nextPath: string): string {
   const canonical = `${CANONICAL_BASE}${nextPath === '/' ? '' : nextPath}`;
-  // Replace any existing canonical tag (Framer sets it to the Framer domain)
-  return html
+
+  let result = html
+    // Remove Framer's canonical and replace with ours
     .replace(/<link[^>]+rel=["']canonical["'][^>]*>/gi, '')
-    .replace('</head>', `<link rel="canonical" href="${canonical}">\n</head>`);
+    // Fix og:url — Framer sets this to mahdicreates.framer.ai which is wrong for social sharing
+    .replace(/<meta property="og:url"[^>]*>/gi, `<meta property="og:url" content="${canonical}">`)
+    // Inject canonical + keywords + structured data into <head>
+    .replace('</head>',
+      `<link rel="canonical" href="${canonical}">\n` +
+      `${KEYWORDS_META}\n` +
+      `${BASE_JSON_LD}\n` +
+      `</head>`,
+    );
+
+  // Trim description/og:description/twitter:description to ≤155 chars
+  result = trimDescriptionMeta(result);
+
+  return result;
 }
 
 /**
