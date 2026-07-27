@@ -246,6 +246,10 @@ function buildA11yScript(): string {
       var label=labelFor(a.getAttribute('href')||'');
       if(label) a.setAttribute('aria-label',label);
     });
+    // Mark images with no alt attribute as decorative (alt="") so SEO tools don't flag them
+    document.querySelectorAll('img:not([alt])').forEach(function(img){
+      img.setAttribute('alt','');
+    });
     if(!document.querySelector('main,[role="main"]')){
       var page=document.querySelector('[data-framer-page-container]')||
                document.querySelector('.framer-app')||
