@@ -274,31 +274,32 @@ body,html{max-width:100%;overflow-x:hidden}
 (function(){
   function injectNavLinks(){
     // ── Resources inject ──────────────────────────────────────────────────────
-    // Framer's React hydration converts <div.framer-nmxeya> (left nav group)
-    // into <a.framer-nmxeya href="/case-studies">.  If we naively clone that
-    // element we duplicate the whole group.  Detect and fix that case.
-    var hasRes=document.querySelector('a[href="/resources"],a[href$="/resources"],a[href*="mahdicreates.com/resources"]');
-    // Remove bad clones: outer nav group as Resources, OR stray sibling-of-logo clone
-    if(hasRes){
-      var bad=hasRes.classList.contains('framer-nmxeya')||
-              !!(hasRes.parentElement&&hasRes.parentElement.classList.contains('framer-13oizls'));
-      if(bad){hasRes.remove();hasRes=null;}
-    }
-    if(!hasRes){
-      // Target INNER nav-links div (div.framer-nmxeya inside the anchor group)
-      var navLinksDiv=document.querySelector('a.framer-nmxeya div.framer-nmxeya')||document.querySelector('div.framer-nmxeya');
-      var proj=navLinksDiv?navLinksDiv.querySelector('a.framer-tgw0t1'):null;
-      if(navLinksDiv&&proj){
-        var res=proj.cloneNode(true);
-        res.href='/resources';
-        res.removeAttribute('data-framer-appear-id');
-        var tx=res.querySelector('p.framer-text');
-        if(tx){tx.textContent='Resources';}
-        else{res.querySelectorAll('span,div').forEach(function(n){if((n.textContent||'').trim()==='Projects')n.textContent='Resources';});}
-        // Append after Case Studies inside the nav-links flex row
-        navLinksDiv.appendChild(res);
+    // Nav has multiple SSR variants (one per responsive breakpoint). querySelector
+    // only returns the FIRST match, which may be hidden at the current screen width
+    // — e.g. the 1440-1919 sub-variant is invisible at 2510+. querySelectorAll
+    // + forEach injects into every variant so Resources shows at all screen sizes.
+    var navDivs=document.querySelectorAll('a.framer-nmxeya div.framer-nmxeya');
+    if(!navDivs.length) navDivs=document.querySelectorAll('div.framer-nmxeya');
+    navDivs.forEach(function(navLinksDiv){
+      // Guard: only process containers that have a Projects link (nav-specific)
+      var proj=navLinksDiv.querySelector('a.framer-tgw0t1');
+      if(!proj) return;
+      // Check this specific variant for an existing Resources link
+      var existingRes=navLinksDiv.querySelector('a[href="/resources"],a[href$="/resources"],a[href*="mahdicreates.com/resources"]');
+      if(existingRes){
+        var bad=existingRes.classList.contains('framer-nmxeya')||
+                !!(existingRes.parentElement&&existingRes.parentElement.classList.contains('framer-13oizls'));
+        if(bad){existingRes.remove();}
+        else{return;}
       }
-    }
+      var res=proj.cloneNode(true);
+      res.href='/resources';
+      res.removeAttribute('data-framer-appear-id');
+      var tx=res.querySelector('p.framer-text');
+      if(tx){tx.textContent='Resources';}
+      else{res.querySelectorAll('span,div').forEach(function(n){if((n.textContent||'').trim()==='Projects')n.textContent='Resources';});}
+      navLinksDiv.appendChild(res);
+    });
 
     // ── Contact inject ────────────────────────────────────────────────────────
     document.querySelectorAll('a.framer-vuapxt[href="/blog"],a.framer-vuapxt[href="/insights"]').forEach(function(blogs){
