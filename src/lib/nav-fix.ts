@@ -75,11 +75,10 @@ function buildNavFixScript(): string {
     });
   }
 
-  fixLinks();
-  [300,800,1800,3000].forEach(function(d){setTimeout(fixLinks,d)});
-  new MutationObserver(fixLinks).observe(document.body,{
-    childList:true,subtree:true,attributes:true,attributeFilter:['href','class']
-  });
+  // Defer DOM mutations until after Framer's React hydration.
+  // Calling fixLinks() before hydration causes React #418 mismatch errors,
+  // which triggers client-side re-render and skips all appear animations.
+  [400,900,2000,3500].forEach(function(d){setTimeout(fixLinks,d);});
 })();
 </script>`;
 }
@@ -254,8 +253,8 @@ function buildA11yScript(): string {
       if(page) page.setAttribute('role','main');
     }
   }
-  fixA11y();
-  [300,900,2000].forEach(function(d){setTimeout(fixA11y,d);});
+  // Defer — same reason as fixLinks: avoid React hydration mismatch.
+  [400,1200,2500].forEach(function(d){setTimeout(fixA11y,d);});
 })();
 </script>`;
 }
@@ -314,9 +313,12 @@ body,html{max-width:100%;overflow-x:hidden}
       blogs.insertAdjacentElement('beforebegin',ct);
     });
   }
-  injectNavLinks();
-  [300,800,1800,3000].forEach(function(d){setTimeout(injectNavLinks,d);});
-  new MutationObserver(injectNavLinks).observe(document.body,{childList:true,subtree:true});
+  // Defer DOM mutations until after Framer's React hydration.
+  // Immediate injection + MutationObserver both fire during hydration, causing
+  // React #418 mismatch which triggers full client re-render — that re-render
+  // initialises all appear-animation elements at opacity:1 instead of 0.001,
+  // skipping all scroll-triggered animations.
+  [400,900,2000,3500].forEach(function(d){setTimeout(injectNavLinks,d);});
 })();
 </script>`;
 }
