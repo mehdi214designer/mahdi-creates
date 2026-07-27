@@ -266,8 +266,9 @@ function buildNavInjectScript(): string {
   .framer-1d8j9t5{width:auto!important}
   .framer-nmxeya{width:auto!important}
 }
-/* Prevent horizontal overflow on mobile (footer clipping) */
-body,html{max-width:100%;overflow-x:hidden}
+/* overflow-x:clip prevents horizontal scrollbar without creating a scroll container.
+   overflow-x:hidden creates a scroll container on html/body which breaks position:sticky. */
+body,html{max-width:100%;overflow-x:clip}
 </style>
 <script>
 (function(){
