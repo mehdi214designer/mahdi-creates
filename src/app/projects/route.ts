@@ -25,9 +25,7 @@ function buildSection(posts: WPPost[]): string {
     const cats = post._embedded?.['wp:term']?.[0] ?? [];
     const excerpt = stripTags(post.excerpt.rendered).slice(0, 200);
 
-    const imgSrc = img?.source_url
-      ?.replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
-      .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+    const imgSrc = img?.source_url;
 
     const imageHtml = imgSrc
       ? `<img class="mc-ph-img" src="${imgSrc}" alt="${img?.alt_text || post.title.rendered}" loading="lazy">`

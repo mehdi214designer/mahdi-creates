@@ -21,9 +21,7 @@ interface WPResource {
 }
 
 function rewriteWpUrls(html: string): string {
-  return html
-    .replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
-    .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+  return html;
 }
 
 function formatDate(dateStr: string): string {

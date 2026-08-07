@@ -33,9 +33,8 @@ function buildPlaceholderImg(title: string): string {
 }
 
 function proxyUrl(url: string): string {
-  return url
-    .replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
-    .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+  // cms.mahdicreates.com/wp-content is directly accessible — use URLs as-is
+  return url;
 }
 
 function buildGrid(posts: WPPost[]): string {

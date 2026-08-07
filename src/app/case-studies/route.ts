@@ -33,9 +33,7 @@ function buildGrid(posts: WPPost[]): string {
     const excerpt = stripTags(post.excerpt.rendered).slice(0, 140);
     const delay = delays[i % delays.length];
 
-    const imgSrc = img?.source_url
-      ?.replace(/https?:\/\/cms\.mahdicreates\.com\/wp-content\//g, '/api/media/')
-      .replace(/https?:\/\/mahdicreates\.com\/wp-content\//g, '/api/media/');
+    const imgSrc = img?.source_url;
     const imageHtml = imgSrc
       ? `<div class="mc-cs-img-wrap"><img class="mc-cs-img" src="${imgSrc}" alt="${img?.alt_text || post.title.rendered}" loading="lazy"></div>`
       : `<div class="mc-cs-placeholder" style="background:linear-gradient(135deg,#0d0500,#1a0a00)"><span style="font-size:11px;letter-spacing:.1em;color:rgba(255,255,255,.2);font-family:sans-serif;text-transform:uppercase">${category}</span></div>`;
