@@ -112,6 +112,11 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body tbody tr:hover{background:rgba(255,255,255,.04)}
 .mc-a-body .wp-block-table{margin:32px 0;overflow-x:auto}
 .mc-a-body .wp-block-table table{margin:0}
+.mc-a-body pre{background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px 24px;margin:28px 0;overflow-x:auto;font-size:13.5px;line-height:1.75}
+.mc-a-body pre code{background:none;border:none;padding:0;font-size:inherit;color:#e2e8f0;font-family:'Fira Code','Cascadia Code','Menlo','Consolas',monospace}
+.mc-a-body code{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:2px 7px;font-size:13px;color:#ffa07a;font-family:'Fira Code','Cascadia Code','Menlo','Consolas',monospace}
+.mc-a-body .wp-block-code{margin:28px 0}
+.mc-a-body .wp-block-code pre{margin:0}
 </style>`;
 
 const COMMENT_CSS = `<style>
