@@ -103,6 +103,15 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body .schema-faq-section{margin-bottom:20px}
 .mc-a-body .schema-faq-question{color:rgba(255,255,255,.75)!important;font-size:14px!important;font-weight:600!important;display:block;margin-bottom:6px}
 .mc-a-body dt{color:rgba(255,255,255,.75)!important}
+.mc-a-body table{width:100%;border-collapse:collapse;margin:32px 0;font-size:14px;overflow:hidden;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
+.mc-a-body thead tr{background:rgba(255,101,34,.1)}
+.mc-a-body th{padding:12px 16px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.1)}
+.mc-a-body td{padding:12px 16px;vertical-align:top;color:rgba(255,255,255,.75);line-height:1.6;border-bottom:1px solid rgba(255,255,255,.06)}
+.mc-a-body tr:last-child td{border-bottom:none}
+.mc-a-body tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+.mc-a-body tbody tr:hover{background:rgba(255,255,255,.04)}
+.mc-a-body .wp-block-table{margin:32px 0;overflow-x:auto}
+.mc-a-body .wp-block-table table{margin:0}
 </style>`;
 
 const COMMENT_CSS = `<style>
