@@ -159,7 +159,14 @@ function buildSSRVariantCSS(): string {
 @media(min-width:2510px){.ssr-variant.hidden-11i8y7r{display:none!important}}
 @media(min-width:1920px) and (max-width:2509.98px){.ssr-variant.hidden-1g6a80v{display:none!important}}
 @media(max-width:1919.98px){.ssr-variant.hidden-72rtr7{display:none!important}}
-</style>`;
+</style>
+<script>
+(function(){
+  var w=window.innerWidth;
+  var hide=w>=2510?'hidden-11i8y7r':w>=1920?'hidden-1g6a80v':'hidden-72rtr7';
+  document.querySelectorAll('.ssr-variant.'+hide).forEach(function(el){el.style.cssText='display:none!important';});
+})();
+</script>`;
 }
 
 function buildMobileNavHTML(): string {
