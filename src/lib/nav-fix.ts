@@ -177,7 +177,7 @@ function buildMobileNavHTML(): string {
 /* Hide broken Framer fallback mobile nav (Resume-only button) */
 .hidden-1qi9knc.hidden-1z3mgk.hidden-1es992z.hidden-aiog3o{display:none!important}
 /* Prevent footer horizontal overflow on narrow viewports */
-.framer-v-19xfg6h,.framer-v-1kdrjlc,.framer-v-1wlma7m{overflow-x:hidden!important;max-width:100vw!important}
+.framer-v-19xfg6h,.framer-v-1kdrjlc,.framer-v-1wlma7m{max-width:100vw!important}
 
 #mc-m-nav{display:none;position:fixed;top:0;left:0;right:0;z-index:10000;height:64px;background:rgba(9,9,11,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);align-items:center;justify-content:space-between;padding:0 20px;box-sizing:border-box}
 #mc-m-toggle{background:none;border:none;cursor:pointer;padding:10px;display:flex;align-items:center;justify-content:center;margin:-10px}
