@@ -149,12 +149,16 @@ window.mcFooterSub=function(s){
 function buildSSRVariantCSS(): string {
   return `<style>
 /* Framer breakpoint fix for fallback HTML files (blog.html, case-studies.html, resources.html, blog-single.html) */
-/* These files all use this 5-breakpoint class set captured from Framer at snapshot time */
+/* Nav section uses 5 breakpoints captured from Framer at snapshot time */
 @media(min-width:2510px){.ssr-variant.hidden-1qi9knc{display:none!important}}
 @media(min-width:1920px) and (max-width:2509.98px){.ssr-variant.hidden-aiog3o{display:none!important}}
 @media(min-width:1440px) and (max-width:1919.98px){.ssr-variant.hidden-1es992z{display:none!important}}
 @media(min-width:810px) and (max-width:1439.98px){.ssr-variant.hidden-1z3mgk{display:none!important}}
 @media(max-width:809.98px){.ssr-variant.hidden-lyfgxj{display:none!important}}
+/* Footer section uses 3 breakpoints (1440/1920/2510 wide variants) — different class names */
+@media(min-width:2510px){.ssr-variant.hidden-11i8y7r{display:none!important}}
+@media(min-width:1920px) and (max-width:2509.98px){.ssr-variant.hidden-1g6a80v{display:none!important}}
+@media(max-width:1919.98px){.ssr-variant.hidden-72rtr7{display:none!important}}
 </style>`;
 }
 
