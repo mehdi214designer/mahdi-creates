@@ -233,6 +233,8 @@ const GA4_ID = 'G-KE2YS6JJ8M';
 
 const GA4_SCRIPT = `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>`;
 
+const CLARITY_SCRIPT = `<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xqlc4wvdns");</script>`;
+
 function buildA11yScript(): string {
   return `<script>
 (function(){
@@ -347,7 +349,7 @@ body,html{max-width:100%;overflow-x:clip}
 export function applyNavFix(html: string, opts: { mobileNav?: boolean } = {}): string {
   const mobileNav = opts.mobileNav ? buildMobileNavHTML() : '';
   const always = buildSSRVariantCSS() + buildNewsletterFormScript();
-  return html.replace('</body>', GA4_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
+  return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }
 
 /** Return a styled 404 Response using the Framer 404 page snapshot */
