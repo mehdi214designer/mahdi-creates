@@ -346,9 +346,12 @@ body,html{max-width:100%;overflow-x:clip}
  * Pass { mobileNav: true } for static single pages (blog/case-study/resource) —
  * those don't load Framer's JS so the hamburger nav can't hydrate; we inject our own.
  */
+const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" />`;
+
 export function applyNavFix(html: string, opts: { mobileNav?: boolean } = {}): string {
   const mobileNav = opts.mobileNav ? buildMobileNavHTML() : '';
   const always = buildSSRVariantCSS() + buildNewsletterFormScript();
+  html = html.replace('</head>', SITEKIT_META + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }
 
