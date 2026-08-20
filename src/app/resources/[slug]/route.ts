@@ -62,9 +62,11 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body figcaption{text-align:center;font-size:12px;color:rgba(255,255,255,.35);margin-top:8px}
 .mc-a-body .wp-block-image{margin:32px 0}
 .mc-a-body .wp-block-image img{width:100%;border-radius:12px}
-.mc-a-body .wp-block-buttons{margin:28px 0}
-.mc-a-body .wp-block-button__link{display:inline-flex;align-items:center;padding:10px 24px;border-radius:100px;background:#ff6522;color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:opacity .2s}
+.mc-a-body .wp-block-buttons{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:28px 0}
+.mc-a-body .wp-block-button__link{display:inline-flex;align-items:center;padding:10px 24px;border-radius:100px;background:#ff6522;color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:opacity .2s,border-color .2s}
 .mc-a-body .wp-block-button__link:hover{opacity:.85}
+.mc-a-body .wp-block-button.is-style-outline .wp-block-button__link{background:transparent!important;color:rgba(255,255,255,.75)!important;border:1px solid rgba(255,255,255,.25)!important}
+.mc-a-body .wp-block-button.is-style-outline .wp-block-button__link:hover{border-color:rgba(255,255,255,.6)!important;color:#fff!important;opacity:1}
 .mc-a-body .wp-block-separator{border:none;border-top:1px solid rgba(255,255,255,.08);margin:40px 0}
 .mc-res-btn-row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 40px}
 .mc-res-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:opacity .2s,background .2s}
