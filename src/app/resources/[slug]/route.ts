@@ -198,7 +198,7 @@ function buildArticle(resource: WPResource): string {
   const externalUrl = resource.meta?.resource_url;
   const ctaUrl = resource.meta?.resource_cta_url;
   const ctaLabel = resource.meta?.resource_cta_label;
-  const encUrl = encodeURIComponent(`https://mahdicreates.com/resources/${resource.slug}`);
+  const encUrl = encodeURIComponent(`https://www.mahdicreates.com/resources/${resource.slug}`);
   const encTitle = encodeURIComponent(resource.title.rendered);
 
   const visitBtn = externalUrl
@@ -300,7 +300,7 @@ export async function GET(
 
     const desc = resource.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = resource._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
-    const canonical = `https://mahdicreates.com/resources/${resource.slug}`;
+    const canonical = `https://www.mahdicreates.com/resources/${resource.slug}`;
     const ogTitle = resource.title.rendered.replace(/"/g, '&quot;');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">

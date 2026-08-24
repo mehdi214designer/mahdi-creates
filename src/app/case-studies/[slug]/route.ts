@@ -98,7 +98,7 @@ function buildArticle(post: WPPost): string {
   const category = cats[0]?.name ?? 'Case Study';
   const content = rewriteWpUrls(post.content.rendered);
   const excerpt = post.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/\[…\]|\[&hellip;\]/g, '').trim().slice(0, 280);
-  const encUrl = encodeURIComponent(`https://mahdicreates.com/case-studies/${post.slug}`);
+  const encUrl = encodeURIComponent(`https://www.mahdicreates.com/case-studies/${post.slug}`);
   const encTitle = encodeURIComponent(post.title.rendered);
 
   return `<!-- MC_POST_START -->
@@ -186,7 +186,7 @@ export async function GET(
 
     const desc = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
-    const canonical = `https://mahdicreates.com/case-studies/${post.slug}`;
+    const canonical = `https://www.mahdicreates.com/case-studies/${post.slug}`;
     const ogTitle = post.title.rendered.replace(/"/g, '&quot;');
     const jsonLd: Record<string, unknown> = {
       '@context': 'https://schema.org',
@@ -196,8 +196,8 @@ export async function GET(
       url: canonical,
       datePublished: post.date,
       dateModified: post.modified || post.date,
-      author: { '@type': 'Person', name: 'Md Mahdi Hasan', url: 'https://mahdicreates.com/about' },
-      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://mahdicreates.com' },
+      author: { '@type': 'Person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
+      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://www.mahdicreates.com' },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     };
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };

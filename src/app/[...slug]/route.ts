@@ -22,7 +22,7 @@ export async function GET(
         const posts: Array<{ slug: string }> = await res.json();
         if (posts.length > 0) {
           return Response.redirect(
-            `https://mahdicreates.com/blog/${posts[0].slug}`,
+            `https://www.mahdicreates.com/blog/${posts[0].slug}`,
             301
           );
         }

@@ -128,7 +128,7 @@ export async function GET(
 
     const desc = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
-    const canonical = `https://mahdicreates.com/projects/${post.slug}`;
+    const canonical = `https://www.mahdicreates.com/projects/${post.slug}`;
     const ogTitle = post.title.rendered.replace(/"/g, '&quot;');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
