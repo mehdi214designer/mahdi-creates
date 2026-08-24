@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description:
       "Portfolio of Md Mahdi Hasan (Mahdi Creates), an award-winning UI/UX Designer with 9+ years of experience.",
     type: "website",
-    url: "https://mahdicreates.com",
+    url: "https://www.mahdicreates.com",
     images: [
       {
         url: "https://framerusercontent.com/assets/HCNyxmDFJarEJs5uqh49sJe1KU.png",

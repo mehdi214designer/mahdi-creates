@@ -362,7 +362,7 @@ export function serve404Response(): Response {
   let html = readFileSync(path.join(process.cwd(), 'src/data/404.html'), 'utf-8');
   // Fix canonical to point to our domain, not framer.ai
   html = html
-    .replace(/https:\/\/mahdicreates\.framer\.ai\/404/g, 'https://mahdicreates.com/404')
+    .replace(/https:\/\/mahdicreates\.framer\.ai\/404/g, 'https://www.mahdicreates.com/404')
     .replace(/<title>[^<]*<\/title>/, '<title>Page Not Found | Mahdi Creates</title>');
   html = applyNavFix(html);
   return new Response(html, {
