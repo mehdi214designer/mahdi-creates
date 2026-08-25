@@ -370,6 +370,12 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
     }
   );
 
+  // Server-side: add alt="" to any <img> tags missing the alt attribute (fixes SEO crawler warnings)
+  html = html.replace(/<img([^>]*)>/g, (_match, attrs) => {
+    if (/\balt=/.test(attrs)) return `<img${attrs}>`;
+    return `<img${attrs.replace(/\s*\/$/, '')} alt="">`;
+  });
+
   html = html.replace('</head>', SITEKIT_META + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }

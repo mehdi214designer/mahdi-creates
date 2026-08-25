@@ -5,6 +5,18 @@ import { applyNavFix, serve404Response } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
+function makeSeoTitle(rawTitle: string): string {
+  const withBrand = `${rawTitle} | Mahdi Creates`;
+  if (withBrand.length <= 70) return withBrand;
+  if (rawTitle.length <= 70) return rawTitle;
+  const maxLen = 54;
+  let candidate = rawTitle.slice(0, maxLen);
+  const lastSpace = candidate.lastIndexOf(' ');
+  if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
+  candidate = candidate.replace(/[,;:.!?\s]+$/, '').trim();
+  return `${candidate} | Mahdi Creates`;
+}
+
 interface WPPost {
   id: number;
   slug: string;
@@ -181,7 +193,7 @@ export async function GET(
 
     html = html.replace(
       /<title>[^<]*<\/title>/,
-      `<title>${post.title.rendered} | Mahdi Creates</title>`
+      `<title>${makeSeoTitle(post.title.rendered)}</title>`
     );
 
     const desc = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');

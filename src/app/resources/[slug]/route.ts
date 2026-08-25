@@ -302,7 +302,12 @@ export async function GET(
       `<title>${resource.title.rendered} | Mahdi Creates</title>`
     );
 
-    const desc = resource.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
+    let descRaw = resource.excerpt.rendered.replace(/<[^>]+>/g, '').trim();
+    if (descRaw.length < 110) {
+      const contentText = resource.content.rendered.replace(/<[^>]+>/g, '').trim();
+      if (contentText.length > descRaw.length) descRaw = contentText;
+    }
+    const desc = descRaw.slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = resource._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://www.mahdicreates.com/resources/${resource.slug}`;
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');

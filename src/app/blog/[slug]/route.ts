@@ -5,6 +5,18 @@ import { applyNavFix, serve404Response } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
+function makeSeoTitle(rawTitle: string): string {
+  const withBrand = `${rawTitle} | Mahdi Creates`;
+  if (withBrand.length <= 70) return withBrand;
+  if (rawTitle.length <= 70) return rawTitle;
+  const maxLen = 54;
+  let candidate = rawTitle.slice(0, maxLen);
+  const lastSpace = candidate.lastIndexOf(' ');
+  if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
+  candidate = candidate.replace(/[,;:.!?\s]+$/, '').trim();
+  return `${candidate} | Mahdi Creates`;
+}
+
 interface WPComment {
   id: number;
   date: string;
@@ -387,7 +399,7 @@ export async function GET(
     // Update page title and meta
     html = html.replace(
       /<title>[^<]*<\/title>/,
-      `<title>${post.title.rendered} | Mahdi Creates</title>`
+      `<title>${makeSeoTitle(post.title.rendered)}</title>`
     );
 
     // Inject per-post SEO meta (injected first so scrapers prefer these over stale template values)
