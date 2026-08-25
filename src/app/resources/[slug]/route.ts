@@ -306,6 +306,7 @@ export async function GET(
     const ogImg = resource._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://www.mahdicreates.com/resources/${resource.slug}`;
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
+    html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
     const ogTitle = resource.title.rendered.replace(/"/g, '&quot;');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">

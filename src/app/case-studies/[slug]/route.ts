@@ -202,6 +202,7 @@ export async function GET(
     };
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
+    html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
 <meta property="og:title" content="${ogTitle} | Mahdi Creates">
