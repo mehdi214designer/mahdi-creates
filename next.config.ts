@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
       { source: '/hello-world/', destination: '/blog', permanent: true },
       { source: '/blog/about', destination: '/about', permanent: true },
       { source: '/contact/', destination: '/contact', permanent: true },
+      // Old Framer root-level blog post slugs (with and without trailing slash)
+      { source: '/history-of-ux-design', destination: '/blog/history-of-ux-design', permanent: true },
+      { source: '/history-of-ux-design/', destination: '/blog/history-of-ux-design', permanent: true },
+      { source: '/a-design-system-in-2026-is-not-a-figma-file-its-your-brands-operating-system', destination: '/blog/a-design-system-in-2026-is-not-a-figma-file-its-your-brands-operating-system', permanent: true },
+      { source: '/a-design-system-in-2026-is-not-a-figma-file-its-your-brands-operating-system/', destination: '/blog/a-design-system-in-2026-is-not-a-figma-file-its-your-brands-operating-system', permanent: true },
       // WordPress taxonomy/author/form pages → relevant sections
       { source: '/category/:slug*', destination: '/blog', permanent: true },
       { source: '/author/:slug*', destination: '/about', permanent: true },
