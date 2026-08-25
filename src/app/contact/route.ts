@@ -6,7 +6,7 @@ const html = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact — Mahdi Creates</title>
-<meta name="description" content="Contact Md Mahdi Hasan (Mahdi Creates) for UI/UX design, branding, or website design projects. Available for new work and collaborations. I reply within 24 hours.">
+<meta name="description" content="Contact Md Mahdi Hasan (Mahdi Creates) for UI/UX design, branding, or web design projects. Available for new work and collaborations. Reply within 24 hours.">
 <link rel="canonical" href="https://www.mahdicreates.com/contact">
 <meta property="og:title" content="Contact — Mahdi Creates">
 <meta property="og:description" content="Get in touch with Mahdi — UI/UX design, branding, digital products, or just say hi.">

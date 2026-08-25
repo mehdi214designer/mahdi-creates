@@ -272,6 +272,21 @@ function buildA11yScript(): string {
   }
   // Defer — same reason as fixLinks: avoid React hydration mismatch.
   [400,1200,2500].forEach(function(d){setTimeout(fixA11y,d);});
+  // MutationObserver: catch img elements added by React hydration or lazy-loaders
+  // after our timed passes. Disconnects after 10s to avoid long-running overhead.
+  if(typeof MutationObserver!=='undefined'){
+    var obs=new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        m.addedNodes.forEach(function(node){
+          if(node.nodeType!==1)return;
+          if(node.tagName==='IMG'&&!node.hasAttribute('alt'))node.setAttribute('alt','');
+          if(node.querySelectorAll)node.querySelectorAll('img:not([alt])').forEach(function(img){img.setAttribute('alt','');});
+        });
+      });
+    });
+    obs.observe(document.documentElement,{childList:true,subtree:true});
+    setTimeout(function(){obs.disconnect();},10000);
+  }
 })();
 </script>`;
 }
