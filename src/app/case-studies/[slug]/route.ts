@@ -201,14 +201,15 @@ export async function GET(
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     };
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
+    html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
-<meta name="description" content="${desc}">
 <meta property="og:title" content="${ogTitle} | Mahdi Creates">
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+    html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
 
     const relRes = await fetch(
       `${WP_API}/case_study?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,

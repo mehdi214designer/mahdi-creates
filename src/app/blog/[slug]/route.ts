@@ -408,12 +408,13 @@ export async function GET(
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     };
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
+    html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
-<meta name="description" content="${desc}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="article">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+    html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
 
     // Replace hardcoded template OG/Twitter tags with per-post values
     html = html.replace(

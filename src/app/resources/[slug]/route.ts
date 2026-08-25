@@ -305,14 +305,15 @@ export async function GET(
     const desc = resource.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = resource._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://www.mahdicreates.com/resources/${resource.slug}`;
+    html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     const ogTitle = resource.title.rendered.replace(/"/g, '&quot;');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
-<meta name="description" content="${desc}">
 <meta property="og:title" content="${ogTitle} | Mahdi Creates">
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}`);
+    html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
 
     // Related resources
     const relRes = await fetch(

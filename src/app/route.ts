@@ -33,7 +33,7 @@ const NEWSLETTER_CAPTURE = `<script>
 
 export async function GET() {
   const raw = await fetchFramerPage('/', 'home.html');
-  const html = applyNavFix(raw).replace('</body>', NEWSLETTER_CAPTURE + '</body>');
+  const html = applyNavFix(raw, { canonical: 'https://www.mahdicreates.com' }).replace('</body>', NEWSLETTER_CAPTURE + '</body>');
 
   return new Response(html, {
     headers: {

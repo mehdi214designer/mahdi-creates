@@ -348,9 +348,28 @@ body,html{max-width:100%;overflow-x:clip}
  */
 const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" />`;
 
-export function applyNavFix(html: string, opts: { mobileNav?: boolean } = {}): string {
+export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical?: string } = {}): string {
   const mobileNav = opts.mobileNav ? buildMobileNavHTML() : '';
   const always = buildSSRVariantCSS() + buildNewsletterFormScript();
+
+  // Fix canonical tag: replace framer.ai URLs or inject provided canonical
+  html = html.replace(
+    /(<link[^>]*rel="canonical"[^>]*href=")([^"]*?)(")/g,
+    (_m, pre, url, post) => {
+      const fixed = opts.canonical ?? url.replace('https://mahdicreates.framer.ai', 'https://www.mahdicreates.com');
+      return pre + fixed + post;
+    }
+  );
+
+  // Fix og:url: same logic
+  html = html.replace(
+    /(<meta[^>]*property="og:url"[^>]*content=")([^"]*?)(")/g,
+    (_m, pre, url, post) => {
+      const fixed = opts.canonical ?? url.replace('https://mahdicreates.framer.ai', 'https://www.mahdicreates.com').replace(/^https:\/\/mahdicreates\.com/, 'https://www.mahdicreates.com');
+      return pre + fixed + post;
+    }
+  );
+
   html = html.replace('</head>', SITEKIT_META + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }

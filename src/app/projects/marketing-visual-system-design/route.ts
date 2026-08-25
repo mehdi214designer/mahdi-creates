@@ -10,7 +10,7 @@ export async function GET() {
     'utf-8'
   );
 
-  return new Response(applyNavFix(html), {
+  return new Response(applyNavFix(html, { canonical: 'https://www.mahdicreates.com/projects/marketing-visual-system-design' }), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
