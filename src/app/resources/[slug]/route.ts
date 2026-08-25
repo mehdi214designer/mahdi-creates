@@ -282,10 +282,14 @@ export async function GET(
 
     const resource = resources[0];
 
-    // Must have content to have a detail page
+    // Must have content to have a detail page — external-only resources redirect out
     const hasContent = resource.content.rendered.replace(/<[^>]+>/g, '').trim().length > 0;
     if (!hasContent) {
-      return serve404Response();
+      const externalUrl = resource.meta?.resource_url;
+      if (externalUrl) {
+        return Response.redirect(externalUrl, 301);
+      }
+      return Response.redirect('https://www.mahdicreates.com/resources', 301);
     }
 
     html = html.replace(

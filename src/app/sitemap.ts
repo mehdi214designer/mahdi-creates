@@ -14,24 +14,29 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
-async function fetchSlugs(postType: string): Promise<Array<{ slug: string; modified: string }>> {
+interface WPEntry { slug: string; modified: string; content?: { rendered: string } }
+
+async function fetchSlugs(postType: string, filterByContent = false): Promise<Array<{ slug: string; modified: string }>> {
   try {
+    const fields = filterByContent ? 'slug,modified,content' : 'slug,modified';
     const res = await fetch(
-      `${WP_API}/${postType}?per_page=100&_fields=slug,modified`,
+      `${WP_API}/${postType}?per_page=100&_fields=${fields}`,
       { next: { revalidate: 300 } }
     );
-    if (res.ok) return res.json() as Promise<Array<{ slug: string; modified: string }>>;
+    if (!res.ok) return [];
+    const posts: WPEntry[] = await res.json();
+    if (!filterByContent) return posts;
+    return posts.filter(p => (p.content?.rendered ?? '').replace(/<[^>]+>/g, '').trim().length > 0);
   } catch {
-    // fall through
+    return [];
   }
-  return [];
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, caseStudies, resources] = await Promise.all([
     fetchSlugs('posts'),
-    fetchSlugs('case_study'),
-    fetchSlugs('mc_resource'),
+    fetchSlugs('case_study', true),
+    fetchSlugs('mc_resource', true),
   ]);
 
   const blogEntries: MetadataRoute.Sitemap = posts.map(p => ({
