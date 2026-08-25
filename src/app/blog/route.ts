@@ -59,6 +59,24 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   let html = await fetchFramerPage('/blog', 'blog.html', 0);
 
+  // Fix OG/meta data bleed from Framer's portfolio page template
+  html = html.replace(/<title>[^<]*<\/title>/, '<title>Blog — Mahdi Creates | UI/UX Design Writing</title>');
+  html = html.replace(
+    /<meta name="description" content="[^"]*">/g,
+    '<meta name="description" content="Articles on UI/UX design, product thinking, and creative process by Md Mahdi Hasan. Practical insights for designers and builders.">'
+  );
+  html = html.replace(
+    /<meta property="og:title" content="[^"]*">/g,
+    '<meta property="og:title" content="Blog — Mahdi Creates | UI/UX Design Writing">'
+  );
+  html = html.replace(
+    /<meta property="og:description" content="[^"]*">/g,
+    '<meta property="og:description" content="Articles on UI/UX design, product thinking, and creative process by Md Mahdi Hasan.">'
+  );
+  html = html.replace(/<meta property="og:type" content="[^"]*">/g, '<meta property="og:type" content="website">');
+  html = html.replace(/<meta name="twitter:title" content="[^"]*">/g, '<meta name="twitter:title" content="Blog — Mahdi Creates | UI/UX Design Writing">');
+  html = html.replace(/<meta name="twitter:description" content="[^"]*">/g, '<meta name="twitter:description" content="Articles on UI/UX design, product thinking, and creative process by Md Mahdi Hasan.">');
+
   try {
     const res = await fetch(
       `${WP_API}/posts?per_page=12&_embed=wp:featuredmedia&_fields=id,slug,date,title,excerpt,featured_media,_links`,

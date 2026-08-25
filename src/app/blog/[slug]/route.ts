@@ -5,6 +5,13 @@ import { applyNavFix, serve404Response } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
+const SLUG_TITLE_OVERRIDES: Record<string, string> = {
+  'visual-hierarchy-in-ui-design': 'Visual Hierarchy in UI Design: The Math Behind It | Mahdi Creates',
+  'website-copywriting-standards': "Website Copywriting Standards: Why Your Copy Isn't Converting | Mahdi Creates",
+  'history-of-ux-design': 'History of UX Design: From WWII to the iPhone | Mahdi Creates',
+  'cross-functional-design-team': 'Cross-Functional Design Teams: Fix Your Workflow Bottleneck | Mahdi Creates',
+};
+
 function makeSeoTitle(rawTitle: string): string {
   const withBrand = `${rawTitle} | Mahdi Creates`;
   if (withBrand.length <= 70) return withBrand;
@@ -162,6 +169,30 @@ const COMMENT_CSS = `<style>
 .mc-form-msg.success{display:block;background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
 .mc-form-msg.error{display:block;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
 </style>`;
+
+function extractFaqSchema(html: string): Record<string, unknown> | null {
+  const chunks = html.split('class="schema-faq-section"');
+  const items: Array<{ question: string; answer: string }> = [];
+  for (let i = 1; i < chunks.length; i++) {
+    const qm = /class="schema-faq-question"[^>]*>([\s\S]*?)<\//.exec(chunks[i]);
+    const am = /class="schema-faq-answer"[^>]*>([\s\S]*?)(?:<\/p>|<\/dd>|<\/div>)/.exec(chunks[i]);
+    if (qm && am) {
+      const q = qm[1].replace(/<[^>]+>/g, '').trim();
+      const a = am[1].replace(/<[^>]+>/g, '').trim();
+      if (q && a) items.push({ question: q, answer: a });
+    }
+  }
+  if (!items.length) return null;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map(s => ({
+      '@type': 'Question',
+      name: s.question,
+      acceptedAnswer: { '@type': 'Answer', text: s.answer },
+    })),
+  };
+}
 
 function buildCommentSection(comments: WPComment[], postId: number): string {
   const list = comments.length === 0
@@ -399,7 +430,7 @@ export async function GET(
     // Update page title and meta
     html = html.replace(
       /<title>[^<]*<\/title>/,
-      `<title>${makeSeoTitle(post.title.rendered)}</title>`
+      `<title>${SLUG_TITLE_OVERRIDES[post.slug] ?? makeSeoTitle(post.title.rendered)}</title>`
     );
 
     // Inject per-post SEO meta (injected first so scrapers prefer these over stale template values)
@@ -422,11 +453,25 @@ export async function GET(
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
+    const breadcrumbLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mahdicreates.com' },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.mahdicreates.com/blog' },
+        { '@type': 'ListItem', position: 3, name: post.title.rendered, item: canonical },
+      ],
+    };
+    const faqLd = extractFaqSchema(post.content.rendered);
+    const extraSchemas = [
+      `<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>`,
+      faqLd ? `<script type="application/ld+json">${JSON.stringify(faqLd)}</script>` : '',
+    ].join('');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="article">
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>${extraSchemas}`);
     html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
 
     // Replace hardcoded template OG/Twitter tags with per-post values
