@@ -51,7 +51,11 @@ function buildGrid(posts: WPPost[]): string {
     </a>`;
   }).join('\n');
 
-  return `<!-- MC_BLOG_GRID_START -->\n  <div class="mc-grid">\n${cards}\n  </div>\n<!-- MC_BLOG_GRID_END -->`;
+  const intro = `<div style="max-width:720px;margin:0 auto 48px;text-align:center;padding:0 24px">
+    <p style="font-size:17px;line-height:1.75;color:rgba(255,255,255,0.5)">Articles on visual hierarchy, UX history, copywriting, design systems, and the real craft behind great digital products — written for designers and builders who think deeply.</p>
+  </div>`;
+
+  return `<!-- MC_BLOG_GRID_START -->\n${intro}\n  <div class="mc-grid">\n${cards}\n  </div>\n<!-- MC_BLOG_GRID_END -->`;
 }
 
 export const dynamic = 'force-dynamic';
