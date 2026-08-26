@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE}/blog/${p.slug}`,
     lastModified: new Date(p.modified),
     changeFrequency: 'monthly' as const,
-    priority: 0.7,
+    priority: 0.75,
   }));
 
   const caseStudyEntries: MetadataRoute.Sitemap = caseStudies.map(p => ({

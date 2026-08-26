@@ -43,7 +43,7 @@ interface WPPost {
   featured_media: number;
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string; alt_text: string }>;
-    'wp:term'?: Array<Array<{ name: string; slug: string }>>;
+    'wp:term'?: Array<Array<{ id: number; name: string; slug: string }>>;
   };
 }
 
@@ -297,6 +297,7 @@ function buildArticle(post: WPPost): string {
   const { toc, modifiedContent } = buildTOC(rawContent);
   const encUrl = encodeURIComponent(`https://www.mahdicreates.com/blog/${post.slug}`);
   const encTitle = encodeURIComponent(post.title.rendered);
+  const showModified = post.modified && post.modified.slice(0, 10) !== post.date.slice(0, 10);
 
   return `<!-- MC_POST_START -->
 ${ARTICLE_CSS}
@@ -308,6 +309,7 @@ ${ARTICLE_CSS}
         <span class="mc-a-cat-pill">${category}</span>
         <span class="mc-meta-sep">·</span>
         <span class="mc-meta-text">${formatDate(post.date)}</span>
+        ${showModified ? `<span class="mc-meta-sep">·</span><span class="mc-meta-text">Updated ${formatDate(post.modified)}</span>` : ''}
         <span class="mc-meta-sep">·</span>
         <span class="mc-meta-text">${readTime(post.content.rendered)}</span>
       </div>
@@ -315,7 +317,7 @@ ${ARTICLE_CSS}
       ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
       <div class="mc-author-bar">
         <img class="mc-author-avi" src="https://secure.gravatar.com/avatar/74b3cff15ccab2eafc5e0648238ad38be70977662de9220e914a8c098f332bf0?s=80&d=mp&r=g" alt="Md Mahdi Hasan">
-        <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer</div></div>
+        <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer · 9+ years building high-conversion web experiences and design systems for global brands.</div></div>
       </div>
     </header>
     <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">
@@ -438,6 +440,7 @@ export async function GET(
     const ogImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://www.mahdicreates.com/blog/${post.slug}`;
     const ogTitle = post.title.rendered.replace(/"/g, '&quot;');
+    const postCats = post._embedded?.['wp:term']?.[0] ?? [];
     const jsonLd: Record<string, unknown> = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -446,9 +449,12 @@ export async function GET(
       url: canonical,
       datePublished: post.date,
       dateModified: post.modified || post.date,
-      author: { '@type': 'Person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
+      author: { '@type': 'Person', '@id': 'https://www.mahdicreates.com/#person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
       publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://www.mahdicreates.com' },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+      wordCount: post.content.rendered.replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length,
+      articleSection: postCats[0]?.name ?? 'Design',
+      inLanguage: 'en-US',
     };
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
@@ -502,12 +508,13 @@ export async function GET(
       );
     }
 
-    // Fetch related posts and comments in parallel
+    // Fetch related posts (category-filtered) and comments in parallel
+    const postCatIds = (post._embedded?.['wp:term']?.[0] ?? []).map(t => t.id).filter(Boolean).join(',');
+    const relatedUrl = postCatIds
+      ? `${WP_API}/posts?per_page=3&exclude=${post.id}&categories=${postCatIds}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`
+      : `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`;
     const [relRes, commentsRes] = await Promise.all([
-      fetch(
-        `${WP_API}/posts?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,
-        { cache: 'no-store' }
-      ),
+      fetch(relatedUrl, { cache: 'no-store' }),
       fetch(
         `${WP_API}/comments?post=${post.id}&per_page=100&order=asc&status=approved&_fields=id,date,author_name,author_avatar_urls,content`,
         { cache: 'no-store' }
