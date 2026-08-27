@@ -175,6 +175,44 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body .wp-block-gallery.columns-3{grid-template-columns:repeat(2,1fr)}
 .mc-a-body .wp-block-pullquote p{font-size:18px}
 }
+/* ── Article header outer (keeps back-link + header aligned with body) ── */
+.mc-article-outer{max-width:800px;margin:0 auto}
+/* ── Rich resource sections ── */
+.mc-rsec{padding:52px 0;border-top:1px solid rgba(255,255,255,.07)}
+.mc-rsec:first-child{border-top:none;padding-top:0}
+.mc-rsec-eyebrow{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ff6522;margin-bottom:18px}
+.mc-rsec-eyebrow::before{content:'';display:block;width:20px;height:2px;background:#ff6522;flex-shrink:0}
+.mc-rsec-h{font-size:clamp(24px,3.5vw,38px);font-weight:700;color:#fff;line-height:1.2;margin:0 0 14px}
+.mc-rsec-lede{font-size:16px;line-height:1.75;color:rgba(255,255,255,.55);margin:0 0 32px;max-width:560px}
+/* 3-col feature grid */
+.mc-rgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;margin-top:24px}
+.mc-rcard{padding:24px;border-right:1px solid rgba(255,255,255,.1)}
+.mc-rcard:last-child{border-right:none}
+.mc-rcard-num{font-size:12px;font-weight:700;color:#ff6522;margin-bottom:10px;letter-spacing:.04em}
+.mc-rcard-title{font-size:14px;font-weight:700;color:#fff;margin:0 0 8px;line-height:1.4}
+.mc-rcard-desc{font-size:13px;line-height:1.6;color:rgba(255,255,255,.45);margin:0}
+/* Numbered steps */
+.mc-rsteps{display:flex;flex-direction:column;position:relative;padding-left:56px}
+.mc-rsteps::before{content:'';position:absolute;left:17px;top:44px;bottom:44px;width:1px;background:rgba(255,255,255,.08)}
+.mc-rstep{padding:22px 0;border-bottom:1px solid rgba(255,255,255,.06);position:relative}
+.mc-rstep:last-child{border-bottom:none}
+.mc-rstep-num{position:absolute;left:-56px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:rgba(255,255,255,.45);background:#0d0d0d;top:20px;z-index:1}
+.mc-rstep h3{font-size:15px;font-weight:700;color:#fff;margin:0 0 8px;line-height:1.4}
+.mc-rstep p{font-size:14px;line-height:1.65;color:rgba(255,255,255,.5);margin:0 0 10px}
+.mc-rstep p:last-child{margin:0}
+/* Inline code for rich sections */
+.mc-ric{background:rgba(255,255,255,.09);padding:2px 7px;border-radius:4px;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.85em;color:rgba(255,255,255,.82)}
+/* Code block for rich sections */
+.mc-rcode{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 18px;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:13px;color:rgba(255,255,255,.75);margin:10px 0;display:flex;align-items:center}
+.mc-rcode-pr{color:#ff6522;margin-right:8px;user-select:none}
+@media(max-width:640px){
+.mc-rgrid3{grid-template-columns:1fr}
+.mc-rcard{border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
+.mc-rcard:last-child{border-bottom:none}
+.mc-rsteps{padding-left:44px}
+.mc-rsteps::before{left:13px}
+.mc-rstep-num{left:-44px;width:28px;height:28px;font-size:11px;top:18px}
+}
 </style>`;
 
 function buildShareRow(encUrl: string, encTitle: string): string {
@@ -238,17 +276,19 @@ ${ARTICLE_CSS}
   return `<!-- MC_POST_START -->
 ${ARTICLE_CSS}
 <article>
-  <a class="mc-back-link" href="/resources">${BACK_SVG}Back to Resources</a>
-  <header class="mc-article-header">
-    <div class="mc-a-meta-row">
-      <span class="mc-a-cat-pill">${category}</span>
-      <span class="mc-meta-sep">·</span>
-      <span class="mc-meta-text">${formatDate(resource.date)}</span>
-    </div>
-    <h1 class="mc-a-title">${resource.title.rendered}</h1>
-    ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
-    ${btnRow}
-  </header>
+  <div class="mc-article-outer">
+    <a class="mc-back-link" href="/resources">${BACK_SVG}Back to Resources</a>
+    <header class="mc-article-header">
+      <div class="mc-a-meta-row">
+        <span class="mc-a-cat-pill">${category}</span>
+        <span class="mc-meta-sep">·</span>
+        <span class="mc-meta-text">${formatDate(resource.date)}</span>
+      </div>
+      <h1 class="mc-a-title">${resource.title.rendered}</h1>
+      ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
+      ${btnRow}
+    </header>
+  </div>
   ${img ? `<img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">` : ''}
   <div class="mc-a-body">${content}</div>
   ${buildShareRow(encUrl, encTitle)}
