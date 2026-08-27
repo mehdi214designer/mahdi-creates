@@ -177,6 +177,12 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 }
 /* ── Article header outer (keeps back-link + header aligned with body) ── */
 .mc-article-outer{max-width:800px;margin:0 auto}
+/* ── Hero install command block ── */
+.mc-hero-code{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px 20px;font-family:'SF Mono',Monaco,Consolas,'Courier New',monospace;font-size:14px;color:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.mc-hero-code-inner{display:flex;align-items:center;gap:10px;overflow:hidden}
+.mc-hero-code-pr{color:#ff6522;flex-shrink:0}
+.mc-hero-copy{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:border-color .2s,color .2s;flex-shrink:0}
+.mc-hero-copy:hover{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.75)}
 /* ── Rich resource sections ── */
 .mc-rsec{padding:52px 0;border-top:1px solid rgba(255,255,255,.07)}
 .mc-rsec:first-child{border-top:none;padding-top:0}
@@ -231,7 +237,11 @@ function buildArticle(resource: WPResource): string {
   const coverAlt = img?.alt_text || resource.title.rendered;
   const terms = resource._embedded?.['wp:term']?.[0] ?? [];
   const category = terms[0]?.name ?? 'Resource';
-  const content = rewriteWpUrls(resource.content.rendered);
+  const rawContent = rewriteWpUrls(resource.content.rendered);
+  // Extract hero install command from content (data-mc-install="cmd") and strip the element
+  const heroMatch = rawContent.match(/data-mc-install="([^"]+)"/);
+  const heroCmd = heroMatch ? heroMatch[1] : null;
+  const content = heroCmd ? rawContent.replace(/<[^>]*data-mc-install="[^"]*"[^>]*>\s*<\/[^>]+>/g, '').replace(/<[^>]*data-mc-install="[^"]*"[^>]*\/>/g, '') : rawContent;
   const excerpt = resource.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/\[…\]|\[&hellip;\]/g, '').trim().slice(0, 280);
   const externalUrl = resource.meta?.resource_url;
   const ctaUrl = resource.meta?.resource_cta_url;
@@ -247,6 +257,9 @@ function buildArticle(resource: WPResource): string {
     : '';
   const btnRow = visitBtn || ctaBtn
     ? `<div class="mc-res-btn-row">${ctaBtn}${visitBtn}</div>`
+    : '';
+  const heroCodeBlock = heroCmd
+    ? `<div class="mc-hero-code"><div class="mc-hero-code-inner"><span class="mc-hero-code-pr">$</span>${heroCmd}</div><button class="mc-hero-copy" id="mc-hero-copy-btn" data-copy="${heroCmd}">copy</button></div><script>(function(){var b=document.getElementById('mc-hero-copy-btn');if(b)b.onclick=function(){navigator.clipboard.writeText(b.dataset.copy).then(function(){var t=b.textContent;b.textContent='copied';setTimeout(function(){b.textContent=t;},1600);});};})();<\/script>`
     : '';
 
   // Standalone resources have their own full-page design (e.g. Server Studio #ss-page)
@@ -286,6 +299,7 @@ ${ARTICLE_CSS}
       </div>
       <h1 class="mc-a-title">${resource.title.rendered}</h1>
       ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
+      ${heroCodeBlock}
       ${btnRow}
     </header>
   </div>
