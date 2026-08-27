@@ -211,6 +211,30 @@ function buildArticle(resource: WPResource): string {
     ? `<div class="mc-res-btn-row">${ctaBtn}${visitBtn}</div>`
     : '';
 
+  // Standalone resources have their own full-page design (e.g. Server Studio #ss-page)
+  // — skip the mc-a-body wrapper and cover image so the design renders at full width
+  const isStandalone = content.includes('id="ss-page"');
+
+  if (isStandalone) {
+    return `<!-- MC_POST_START -->
+${ARTICLE_CSS}
+<article>
+  <div style="max-width:800px;margin:0 auto;padding:0 28px 0">
+    <a class="mc-back-link" href="/resources">${BACK_SVG}Back to Resources</a>
+    <header class="mc-article-header">
+      <div class="mc-a-meta-row">
+        <span class="mc-a-cat-pill">${category}</span>
+        <span class="mc-meta-sep">·</span>
+        <span class="mc-meta-text">${formatDate(resource.date)}</span>
+      </div>
+    </header>
+  </div>
+  ${content}
+  ${buildShareRow(encUrl, encTitle)}
+</article>
+<!-- MC_POST_END -->`;
+  }
+
   return `<!-- MC_POST_START -->
 ${ARTICLE_CSS}
 <article>
@@ -225,7 +249,7 @@ ${ARTICLE_CSS}
     ${excerpt ? `<p class="mc-a-lead">${excerpt}</p>` : ''}
     ${btnRow}
   </header>
-  <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">
+  ${img ? `<img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">` : ''}
   <div class="mc-a-body">${content}</div>
   ${buildShareRow(encUrl, encTitle)}
 </article>
