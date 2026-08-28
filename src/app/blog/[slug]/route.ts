@@ -310,7 +310,7 @@ function buildArticle(post: WPPost): string {
   const rawContent = rewriteWpUrls(post.content.rendered);
   const excerpt = post.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/\[…\]|\[&hellip;\]/g, '').trim().slice(0, 280);
   const { toc, modifiedContent: tocContent } = buildTOC(rawContent);
-  const modifiedContent = tocContent.replace(/<!--\s*mc:subscribe\s*-->/gi, buildInlineSubscribeBox());
+  const modifiedContent = tocContent.replace(/<div\s+data-mc=["']subscribe["']\s*(?:\/>|><\/div>)/gi, buildInlineSubscribeBox());
   const encUrl = encodeURIComponent(`https://www.mahdicreates.com/blog/${post.slug}`);
   const encTitle = encodeURIComponent(post.title.rendered);
   const showModified = post.modified && post.modified.slice(0, 10) !== post.date.slice(0, 10);
