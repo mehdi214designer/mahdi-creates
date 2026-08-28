@@ -35,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr" data-redirect-timezone="1">
       <head>
+        <meta name="p:domain_verify" content="29c1a90992a1114b7055c15920f1a312" />
         <link rel="preconnect" href="https://framerusercontent.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
