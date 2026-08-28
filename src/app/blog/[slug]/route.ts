@@ -140,6 +140,16 @@ button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',
 .mc-a-body code{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:2px 7px;font-size:13px;color:#ffa07a;font-family:'Fira Code','Cascadia Code','Menlo','Consolas',monospace}
 .mc-a-body .wp-block-code{margin:28px 0}
 .mc-a-body .wp-block-code pre{margin:0}
+.mc-inline-sub{background:rgba(255,101,34,.06);border:1px solid rgba(255,101,34,.2);border-radius:16px;padding:28px 32px;margin:40px 0;text-align:center}
+.mc-inline-sub-title{font-size:18px;font-weight:700;color:#fff;margin:0 0 8px}
+.mc-inline-sub-desc{font-size:14px;color:rgba(255,255,255,.5);margin:0 0 20px}
+.mc-inline-sub-row{display:flex;gap:10px;max-width:440px;margin:0 auto}
+.mc-inline-sub-inp{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.mc-inline-sub-inp:focus{border-color:rgba(255,101,34,.5)}
+.mc-inline-sub-btn{background:#ff6522;color:#fff;border:none;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity .2s}
+.mc-inline-sub-btn:hover{opacity:.85}
+.mc-inline-sub-msg{margin-top:12px;font-size:13px;display:none}
+@media(max-width:600px){.mc-inline-sub-row{flex-direction:column}}
 </style>`;
 
 const COMMENT_CSS = `<style>
@@ -255,6 +265,11 @@ function buildShareRow(encUrl: string, encTitle: string): string {
 <script>(function(){var b=document.getElementById('mc-copy-btn');if(b)b.onclick=function(){navigator.clipboard.writeText(location.href).then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy Link';},2000)});};})();</script>`;
 }
 
+function buildInlineSubscribeBox(): string {
+  const uid = 'mc-isub-' + Math.random().toString(36).slice(2, 8);
+  return `<div class="mc-inline-sub"><p class="mc-inline-sub-title">Enjoying this article?</p><p class="mc-inline-sub-desc">Get design insights like this delivered straight to your inbox.</p><div class="mc-inline-sub-row"><input id="${uid}-e" class="mc-inline-sub-inp" type="email" placeholder="your@email.com" /><button id="${uid}-b" class="mc-inline-sub-btn">Subscribe</button></div><p id="${uid}-m" class="mc-inline-sub-msg"></p><script>(function(){var b=document.getElementById('${uid}-b'),e=document.getElementById('${uid}-e'),m=document.getElementById('${uid}-m');b.addEventListener('click',function(){if(!e.value||!e.value.includes('@')){e.focus();return;}b.disabled=true;b.textContent='Sending…';fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e.value})}).then(function(r){return r.json();}).then(function(d){m.style.display='block';if(d.ok||d.message){m.style.color='#6ee7b7';m.textContent='Subscribed! Talk soon.';b.style.display='none';}else{m.style.color='#fca5a5';m.textContent=d.error||'Something went wrong.';b.disabled=false;b.textContent='Subscribe';}}).catch(function(){m.style.color='#fca5a5';m.textContent='Something went wrong.';b.disabled=false;b.textContent='Subscribe';});});e.addEventListener('keydown',function(ev){if(ev.key==='Enter')b.click();});})();<\/script></div>`;
+}
+
 function buildTOC(content: string): { toc: string; modifiedContent: string } {
   const seen = new Map<string, number>();
   const headings: Array<{ level: string; text: string; id: string }> = [];
@@ -294,7 +309,8 @@ function buildArticle(post: WPPost): string {
   const category = cats[0]?.name ?? 'Design';
   const rawContent = rewriteWpUrls(post.content.rendered);
   const excerpt = post.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/\[…\]|\[&hellip;\]/g, '').trim().slice(0, 280);
-  const { toc, modifiedContent } = buildTOC(rawContent);
+  const { toc, modifiedContent: tocContent } = buildTOC(rawContent);
+  const modifiedContent = tocContent.replace(/<!--\s*mc:subscribe\s*-->/gi, buildInlineSubscribeBox());
   const encUrl = encodeURIComponent(`https://www.mahdicreates.com/blog/${post.slug}`);
   const encTitle = encodeURIComponent(post.title.rendered);
   const showModified = post.modified && post.modified.slice(0, 10) !== post.date.slice(0, 10);
