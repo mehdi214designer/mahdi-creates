@@ -20,14 +20,21 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Please enter a valid email address.' }, { status: 400, headers: CORS });
     }
 
+    // Anything the sender actually typed. Capped so a bad client cannot post a novel.
+    const message = String(body.message ?? '').trim().slice(0, 2000);
+    // Lets you tell a plain newsletter signup apart from a request sent from the app.
+    const source = String(body.source ?? '').trim().slice(0, 60);
+
     const wpRes = await fetch(WP_CONTACT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-MC-Key': API_KEY },
       body: JSON.stringify({
-        name: 'Newsletter Subscriber',
+        name: message ? 'Server Studio request' : 'Newsletter Subscriber',
         email,
-        interest: 'newsletter',
-        message: 'Newsletter subscription via mahdicreates.com',
+        interest: message ? (source || 'server-studio') : 'newsletter',
+        // Forward what they wrote. Without this the request is silently dropped and
+        // the sender is told it worked.
+        message: message || 'Newsletter subscription via mahdicreates.com',
       }),
     });
 
