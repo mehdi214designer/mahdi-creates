@@ -25,7 +25,7 @@ const OG_EXTRA = `<meta property="og:site_name" content="Mahdi Creates">
 const BASE_JSON_LD = `<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://www.mahdicreates.com/#person","name":"Md Mahdi Hasan","alternateName":"Mahdi Creates","url":"https://www.mahdicreates.com","jobTitle":"UI/UX Designer","sameAs":["https://x.com/mahdicreates","https://www.linkedin.com/in/mahdicreates/","https://www.instagram.com/mahdi_creates/","https://www.facebook.com/mahdicreates/","https://dribbble.com/mahdicreates","https://www.behance.net/mahdicreate"],"knowsAbout":["UI Design","UX Design","Design Systems","Visual Hierarchy","Web Copywriting","Brand Strategy","Design Thinking"],"description":"Award-winning UI/UX Designer with 9+ years of experience in strategic, high-conversion web design and design systems for global brands."},{"@type":"WebSite","@id":"https://www.mahdicreates.com/#website","url":"https://www.mahdicreates.com","name":"Mahdi Creates","publisher":{"@id":"https://www.mahdicreates.com/#person"}}]}</script>`;
 
 function trimDescriptionMeta(html: string): string {
-  const MAX = 155;
+  const MAX = 160;
   function trim(value: string): string {
     if (value.length <= MAX) return value;
     // Prefer cutting at a sentence boundary (period) for cleaner descriptions

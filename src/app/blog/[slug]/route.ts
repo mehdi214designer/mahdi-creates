@@ -14,9 +14,9 @@ const SLUG_TITLE_OVERRIDES: Record<string, string> = {
 
 function makeSeoTitle(rawTitle: string): string {
   const withBrand = `${rawTitle} | Mahdi Creates`;
-  if (withBrand.length <= 70) return withBrand;
-  if (rawTitle.length <= 70) return rawTitle;
-  const maxLen = 54;
+  if (withBrand.length <= 60) return withBrand;
+  if (rawTitle.length <= 60) return rawTitle;
+  const maxLen = 44; // 60 - " | Mahdi Creates".length
   let candidate = rawTitle.slice(0, maxLen);
   const lastSpace = candidate.lastIndexOf(' ');
   if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
@@ -336,7 +336,7 @@ ${ARTICLE_CSS}
         <div><div class="mc-author-nm">Md Mahdi Hasan</div><div class="mc-author-sb">UI/UX Designer · 9+ years building high-conversion web experiences and design systems for global brands.</div></div>
       </div>
     </header>
-    <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" loading="lazy">
+    <img class="mc-a-cover" src="${coverSrc}" alt="${coverAlt}" fetchpriority="high">
   </div>
   <div class="mc-layout">
     <div class="mc-content">

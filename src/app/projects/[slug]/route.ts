@@ -5,10 +5,23 @@ import { applyNavFix } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
+function makeSeoTitle(rawTitle: string): string {
+  const withBrand = `${rawTitle} | Mahdi Creates`;
+  if (withBrand.length <= 60) return withBrand;
+  if (rawTitle.length <= 60) return rawTitle;
+  const maxLen = 44;
+  let candidate = rawTitle.slice(0, maxLen);
+  const lastSpace = candidate.lastIndexOf(' ');
+  if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
+  candidate = candidate.replace(/[,;:.!?\s]+$/, '').trim();
+  return `${candidate} | Mahdi Creates`;
+}
+
 interface WPPost {
   id: number;
   slug: string;
   date: string;
+  modified: string;
   title: { rendered: string };
   content: { rendered: string };
   excerpt: { rendered: string };
@@ -102,7 +115,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `${WP_API}/portfolio?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,excerpt,featured_media,_links`,
+      `${WP_API}/portfolio?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,modified,title,content,excerpt,featured_media,_links`,
       { cache: 'no-store' }
     );
 
@@ -123,20 +136,59 @@ export async function GET(
 
     html = html.replace(
       /<title>[^<]*<\/title>/,
-      `<title>${post.title.rendered} | Mahdi Creates</title>`
+      `<title>${makeSeoTitle(post.title.rendered)}</title>`
     );
 
-    const desc = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim().slice(0, 160).replace(/"/g, '&quot;');
+    let descRaw = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim();
+    if (descRaw.length < 80) {
+      const contentText = post.content.rendered.replace(/<[^>]+>/g, '').trim();
+      if (contentText.length > descRaw.length) descRaw = contentText;
+    }
+    const desc = descRaw.slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://www.mahdicreates.com/projects/${post.slug}`;
     const ogTitle = post.title.rendered.replace(/"/g, '&quot;');
+    const cats = post._embedded?.['wp:term']?.[0] ?? [];
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title.rendered,
+      description: descRaw.slice(0, 160),
+      url: canonical,
+      datePublished: post.date,
+      dateModified: post.modified || post.date,
+      author: { '@type': 'Person', '@id': 'https://www.mahdicreates.com/#person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
+      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://www.mahdicreates.com', logo: { '@type': 'ImageObject', url: 'https://www.mahdicreates.com/logo.png' } },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+      articleSection: cats[0]?.name ?? 'Design',
+    };
+    if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
+    const breadcrumbLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mahdicreates.com' },
+        { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://www.mahdicreates.com/projects' },
+        { '@type': 'ListItem', position: 3, name: post.title.rendered, item: canonical },
+      ],
+    };
+    html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
+    html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
-<meta name="description" content="${desc}">
-<meta property="og:title" content="${ogTitle} | Mahdi Creates">
-<meta property="og:description" content="${desc}">
-<meta property="og:url" content="${canonical}">
-<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}`);
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>`);
+    html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
+    html = html.replace(/<meta property="og:title" content="[^"]*">/g, `<meta property="og:title" content="${ogTitle} | Mahdi Creates">`);
+    html = html.replace(/<meta name="twitter:title" content="[^"]*">/g, `<meta name="twitter:title" content="${ogTitle} | Mahdi Creates">`);
+    html = html.replace(/<meta property="og:description" content="[^"]*">/g, `<meta property="og:description" content="${desc}">`);
+    html = html.replace(/<meta name="twitter:description" content="[^"]*">/g, `<meta name="twitter:description" content="${desc}">`);
+    html = html.replace(/<meta property="og:url" content="[^"]*">/g, `<meta property="og:url" content="${canonical}">`);
+    html = html.replace(/<meta property="og:type" content="[^"]*">/g, '<meta property="og:type" content="article">');
+    if (ogImg) {
+      html = html.replace(/<meta property="og:image" content="[^"]*">/g, `<meta property="og:image" content="${ogImg}">`);
+      html = html.replace(/<meta name="twitter:image" content="[^"]*">/g, `<meta name="twitter:image" content="${ogImg}">`);
+    }
 
     const relRes = await fetch(
       `${WP_API}/portfolio?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,

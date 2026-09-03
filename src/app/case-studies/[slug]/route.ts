@@ -7,9 +7,9 @@ const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
 function makeSeoTitle(rawTitle: string): string {
   const withBrand = `${rawTitle} | Mahdi Creates`;
-  if (withBrand.length <= 70) return withBrand;
-  if (rawTitle.length <= 70) return rawTitle;
-  const maxLen = 54;
+  if (withBrand.length <= 60) return withBrand;
+  if (rawTitle.length <= 60) return rawTitle;
+  const maxLen = 44; // 60 - " | Mahdi Creates".length
   let candidate = rawTitle.slice(0, maxLen);
   const lastSpace = candidate.lastIndexOf(' ');
   if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
@@ -208,21 +208,37 @@ export async function GET(
       url: canonical,
       datePublished: post.date,
       dateModified: post.modified || post.date,
-      author: { '@type': 'Person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
-      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://www.mahdicreates.com' },
+      author: { '@type': 'Person', '@id': 'https://www.mahdicreates.com/#person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
+      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://www.mahdicreates.com', logo: { '@type': 'ImageObject', url: 'https://www.mahdicreates.com/logo.png' } },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     };
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
+    const breadcrumbLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mahdicreates.com' },
+        { '@type': 'ListItem', position: 2, name: 'Case Studies', item: 'https://www.mahdicreates.com/case-studies' },
+        { '@type': 'ListItem', position: 3, name: post.title.rendered, item: canonical },
+      ],
+    };
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
-<meta property="og:title" content="${ogTitle} | Mahdi Creates">
-<meta property="og:description" content="${desc}">
-<meta property="og:url" content="${canonical}">
-<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>`);
     html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
+    html = html.replace(/<meta property="og:title" content="[^"]*">/g, `<meta property="og:title" content="${ogTitle} | Mahdi Creates">`);
+    html = html.replace(/<meta name="twitter:title" content="[^"]*">/g, `<meta name="twitter:title" content="${ogTitle} | Mahdi Creates">`);
+    html = html.replace(/<meta property="og:description" content="[^"]*">/g, `<meta property="og:description" content="${desc}">`);
+    html = html.replace(/<meta name="twitter:description" content="[^"]*">/g, `<meta name="twitter:description" content="${desc}">`);
+    html = html.replace(/<meta property="og:url" content="[^"]*">/g, `<meta property="og:url" content="${canonical}">`);
+    html = html.replace(/<meta property="og:type" content="[^"]*">/g, '<meta property="og:type" content="article">');
+    if (ogImg) {
+      html = html.replace(/<meta property="og:image" content="[^"]*">/g, `<meta property="og:image" content="${ogImg}">`);
+      html = html.replace(/<meta name="twitter:image" content="[^"]*">/g, `<meta name="twitter:image" content="${ogImg}">`);
+    }
 
     const relRes = await fetch(
       `${WP_API}/case_study?per_page=3&exclude=${post.id}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,featured_media,_links`,

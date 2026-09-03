@@ -5,10 +5,23 @@ import { applyNavFix, serve404Response } from '@/lib/nav-fix';
 
 const WP_API = 'https://cms.mahdicreates.com/wp-json/wp/v2';
 
+function makeSeoTitle(rawTitle: string): string {
+  const withBrand = `${rawTitle} | Mahdi Creates`;
+  if (withBrand.length <= 60) return withBrand;
+  if (rawTitle.length <= 60) return rawTitle;
+  const maxLen = 44;
+  let candidate = rawTitle.slice(0, maxLen);
+  const lastSpace = candidate.lastIndexOf(' ');
+  if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
+  candidate = candidate.replace(/[,;:.!?\s]+$/, '').trim();
+  return `${candidate} | Mahdi Creates`;
+}
+
 interface WPResource {
   id: number;
   slug: string;
   date: string;
+  modified: string;
   title: { rendered: string };
   content: { rendered: string };
   excerpt: { rendered: string };
@@ -347,7 +360,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `${WP_API}/mc_resource?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,excerpt,featured_media,meta,_links`,
+      `${WP_API}/mc_resource?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,modified,title,content,excerpt,featured_media,meta,_links`,
       { cache: 'no-store' }
     );
 
@@ -377,7 +390,7 @@ export async function GET(
 
     html = html.replace(
       /<title>[^<]*<\/title>/,
-      `<title>${resource.title.rendered} | Mahdi Creates</title>`
+      `<title>${makeSeoTitle(resource.title.rendered)}</title>`
     );
 
     let descRaw = resource.excerpt.rendered.replace(/<[^>]+>/g, '').trim();
@@ -388,16 +401,48 @@ export async function GET(
     const desc = descRaw.slice(0, 160).replace(/"/g, '&quot;');
     const ogImg = resource._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '';
     const canonical = `https://www.mahdicreates.com/resources/${resource.slug}`;
+    const ogTitle = resource.title.rendered.replace(/"/g, '&quot;');
+    const terms = resource._embedded?.['wp:term']?.[0] ?? [];
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: resource.title.rendered,
+      description: descRaw.slice(0, 160),
+      url: canonical,
+      datePublished: resource.date,
+      dateModified: resource.modified || resource.date,
+      author: { '@type': 'Person', '@id': 'https://www.mahdicreates.com/#person', name: 'Md Mahdi Hasan', url: 'https://www.mahdicreates.com/about' },
+      publisher: { '@type': 'Organization', name: 'Mahdi Creates', url: 'https://www.mahdicreates.com', logo: { '@type': 'ImageObject', url: 'https://www.mahdicreates.com/logo.png' } },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+      articleSection: terms[0]?.name ?? 'Resource',
+    };
+    if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
+    const breadcrumbLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.mahdicreates.com' },
+        { '@type': 'ListItem', position: 2, name: 'Resources', item: 'https://www.mahdicreates.com/resources' },
+        { '@type': 'ListItem', position: 3, name: resource.title.rendered, item: canonical },
+      ],
+    };
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
-    const ogTitle = resource.title.rendered.replace(/"/g, '&quot;');
     html = html.replace('<head>', `<head>
 <link rel="canonical" href="${canonical}">
-<meta property="og:title" content="${ogTitle} | Mahdi Creates">
-<meta property="og:description" content="${desc}">
-<meta property="og:url" content="${canonical}">
-<meta property="og:type" content="article">${ogImg ? `\n<meta property="og:image" content="${ogImg}">` : ''}`);
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>`);
     html = html.replace(/<meta name="description" content="[^"]*">/g, `<meta name="description" content="${desc}">`);
+    html = html.replace(/<meta property="og:title" content="[^"]*">/g, `<meta property="og:title" content="${ogTitle} | Mahdi Creates">`);
+    html = html.replace(/<meta name="twitter:title" content="[^"]*">/g, `<meta name="twitter:title" content="${ogTitle} | Mahdi Creates">`);
+    html = html.replace(/<meta property="og:description" content="[^"]*">/g, `<meta property="og:description" content="${desc}">`);
+    html = html.replace(/<meta name="twitter:description" content="[^"]*">/g, `<meta name="twitter:description" content="${desc}">`);
+    html = html.replace(/<meta property="og:url" content="[^"]*">/g, `<meta property="og:url" content="${canonical}">`);
+    html = html.replace(/<meta property="og:type" content="[^"]*">/g, '<meta property="og:type" content="article">');
+    if (ogImg) {
+      html = html.replace(/<meta property="og:image" content="[^"]*">/g, `<meta property="og:image" content="${ogImg}">`);
+      html = html.replace(/<meta name="twitter:image" content="[^"]*">/g, `<meta name="twitter:image" content="${ogImg}">`);
+    }
 
     // Related resources
     const relRes = await fetch(
