@@ -25,6 +25,20 @@ const nextConfig: NextConfig = {
       { source: '/category/:slug*', destination: '/blog', permanent: true },
       { source: '/author/:slug*', destination: '/about', permanent: true },
       { source: '/form/:slug*', destination: '/contact', permanent: true },
+      // Renamed case study slug
+      { source: '/case-studies/skoolen-agency-website-redesign', destination: '/case-studies/skoolen-agency-marketing-website', permanent: true },
+      { source: '/case-studies/skoolen-agency-website-redesign/', destination: '/case-studies/skoolen-agency-marketing-website', permanent: true },
+      // Renamed blog post slug
+      { source: '/blog/the-art-of-visual-hierarchy-in-ui-design', destination: '/blog/visual-hierarchy-in-ui-design', permanent: true },
+      { source: '/blog/the-art-of-visual-hierarchy-in-ui-design/', destination: '/blog/visual-hierarchy-in-ui-design', permanent: true },
+      // Removed resources → resources listing
+      { source: '/resources/framer-cms-deep-dive-full-course', destination: '/resources', permanent: true },
+      { source: '/resources/framer-cms-deep-dive-full-course/', destination: '/resources', permanent: true },
+      { source: '/resources/radix-ui-headless-component-primitives', destination: '/resources', permanent: true },
+      { source: '/resources/radix-ui-headless-component-primitives/', destination: '/resources', permanent: true },
+      // Old section name
+      { source: '/insights', destination: '/blog', permanent: true },
+      { source: '/insights/', destination: '/blog', permanent: true },
     ];
   },
 };
