@@ -550,6 +550,11 @@ export async function GET(
         /<!-- MC_RELATED_START -->[\s\S]*?<!-- MC_RELATED_END -->/,
         buildRelated(related)
       );
+    } else {
+      html = html.replace(
+        /<section class="mc-related">[\s\S]*?<!-- MC_RELATED_END -->\s*<\/section>/,
+        ''
+      );
     }
   } catch (e) {
     console.error('[blog/slug] error:', e);
