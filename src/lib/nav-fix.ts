@@ -363,9 +363,20 @@ body,html{max-width:100%;overflow-x:clip}
  */
 const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" /><meta name="p:domain_verify" content="29c1a90992a1114b7055c15920f1a312" />`;
 
+const SITE_META = `<meta property="og:site_name" content="Mahdi Creates">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mahdi Creates","url":"https://www.mahdicreates.com","author":{"@type":"Person","name":"Md Mahdi Hasan","url":"https://www.mahdicreates.com/about"}}</script>`;
+
 export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical?: string } = {}): string {
   const mobileNav = opts.mobileNav ? buildMobileNavHTML() : '';
   const always = buildSSRVariantCSS() + buildNewsletterFormScript();
+
+  // Strip Framer badge from HTML entirely — CSS display:none hides it visually but
+  // Googlebot reads raw HTML and attributes the site to "Framer" from the badge anchor.
+  html = html.replace(/<div\s+id="__framer-badge-container">[\s\S]*?<\/a><!--\/\$--><!--\/\$--><!--\/\$--><\/div>/, '');
+  // Fallback: strip badge anchor directly if container structure differs
+  html = html.replace(/<a[^>]*href="https:\/\/www\.framer\.com"[^>]*>[\s\S]*?<\/a>/g, '');
+  // Strip "Made in Framer" HTML comment
+  html = html.replace(/<!--\s*Made in Framer[^>]*-->/g, '');
 
   // Fix canonical tag: replace framer.ai URLs or inject provided canonical
   html = html.replace(
@@ -391,7 +402,7 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
     return `<img${attrs.replace(/\s*\/$/, '')} alt="">`;
   });
 
-  html = html.replace('</head>', SITEKIT_META + '</head>');
+  html = html.replace('</head>', SITEKIT_META + SITE_META + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }
 
