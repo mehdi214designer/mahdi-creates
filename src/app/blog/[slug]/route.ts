@@ -16,7 +16,15 @@ function makeSeoTitle(rawTitle: string): string {
   const withBrand = `${rawTitle} | Mahdi Creates`;
   if (withBrand.length <= 60) return withBrand;
   if (rawTitle.length <= 60) return rawTitle;
-  const maxLen = 44; // 60 - " | Mahdi Creates".length
+  const maxLen = 44; // 60 - " | Mahdi Creates".length (16 chars)
+  // Prefer natural breakpoints over arbitrary word cuts
+  for (const bp of [':', ' —', '. ', ',']) {
+    const idx = rawTitle.indexOf(bp);
+    if (idx > 20 && idx <= maxLen) {
+      return `${rawTitle.slice(0, idx).trim()} | Mahdi Creates`;
+    }
+  }
+  // Fall back to word boundary
   let candidate = rawTitle.slice(0, maxLen);
   const lastSpace = candidate.lastIndexOf(' ');
   if (lastSpace > maxLen * 0.6) candidate = candidate.slice(0, lastSpace);
