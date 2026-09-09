@@ -483,6 +483,8 @@ export async function GET(
     if (ogImg) jsonLd.image = { '@type': 'ImageObject', url: ogImg };
     html = html.replace(/<link[^>]*rel="canonical"[^>]*>/g, '');
     html = html.replace(/<meta[^>]*property="og:url"[^>]*>/g, '');
+    // Remove template's og:type="website" — we inject og:type="article" for blog posts
+    html = html.replace(/<meta[^>]*property="og:type"[^>]*>/g, '');
     const breadcrumbLd = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
