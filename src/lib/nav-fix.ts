@@ -377,6 +377,23 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
   html = html.replace(/<a[^>]*href="https:\/\/www\.framer\.com"[^>]*>[\s\S]*?<\/a>/g, '');
   // Strip "Made in Framer" HTML comment
   html = html.replace(/<!--\s*Made in Framer[^>]*-->/g, '');
+  // Strip generator meta tag — Google reads this and knows the site is built with Framer
+  html = html.replace(/<meta\s+name="generator"\s+content="Framer[^"]*"\s*\/?>/gi, '');
+  // Strip Framer editor bar preload script (unnecessary framer.com network request)
+  html = html.replace(/<script>try\{if\(localStorage\.get\("__framer_force_showing_editorbar_since"\)[\s\S]*?<\/script>/, '');
+  // Replace Framer-CDN favicons with self-hosted ones
+  html = html.replace(
+    /<link[^>]*href="https:\/\/framerusercontent\.com\/images\/[^"]*"[^>]*rel="icon"[^>]*>/g,
+    '<link rel="icon" href="/favicon.svg" type="image/svg+xml">'
+  );
+  html = html.replace(
+    /<link[^>]*rel="icon"[^>]*href="https:\/\/framerusercontent\.com\/images\/[^"]*"[^>]*>/g,
+    '<link rel="icon" href="/favicon.svg" type="image/svg+xml">'
+  );
+  html = html.replace(
+    /<link[^>]*rel="apple-touch-icon"[^>]*href="https:\/\/framerusercontent\.com\/images\/[^"]*"[^>]*>/g,
+    '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'
+  );
 
   // Fix canonical tag: replace framer.ai URLs or inject provided canonical
   html = html.replace(
