@@ -419,7 +419,8 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
     return `<img${attrs.replace(/\s*\/$/, '')} alt="">`;
   });
 
-  html = html.replace('</head>', SITEKIT_META + SITE_META + '</head>');
+  const siteMeta = html.includes('og:site_name') ? '' : SITE_META;
+  html = html.replace('</head>', SITEKIT_META + siteMeta + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }
 
@@ -437,7 +438,7 @@ export function serve404Response(): Response {
     status: 404,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60',
     },
   });
 }
