@@ -111,6 +111,7 @@ const ARTICLE_CSS = `<style>
 .mc-toc-h3 a{padding-left:14px;font-size:12px;color:rgba(255,255,255,.35)}
 .mc-toc-item a.mc-toc-active{color:#ff6522!important;font-weight:600}
 @media(max-width:1100px){.mc-layout{flex-direction:column;max-width:800px}.mc-content{max-width:100%}.mc-toc-sidebar{width:100%;position:static;max-height:none}.mc-toc{margin-bottom:32px}}
+@media(max-width:810px){.mc-layout{width:100%;box-sizing:border-box}.mc-a-header-wrap{width:100%;box-sizing:border-box}.mc-a-title{font-size:clamp(22px,5vw,40px)}.mc-a-lead{font-size:15px}.mc-inline-sub-row{flex-direction:column}}
 .mc-share-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);margin-top:40px}
 .mc-share-lbl{font-size:13px;font-weight:600;color:rgba(255,255,255,.4);margin-right:4px}
 .mc-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.55);text-decoration:none;cursor:pointer;transition:border-color .2s,color .2s;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:500}
