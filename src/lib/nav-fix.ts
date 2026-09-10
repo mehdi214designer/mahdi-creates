@@ -9,6 +9,12 @@
  * hydration, so we also fix those by matching text content.
  */
 
+import { readFileSync } from 'fs';
+import path from 'path';
+
+// Read at module level so Next.js output-file-tracing includes it in the bundle.
+const CUSTOM_FOOTER_HTML = readFileSync(path.join(process.cwd(), 'src/data/footer-home.html'), 'utf-8');
+
 const ROUTE_MAP: Record<string, string> = {
   '/insights': '/blog',
   '/insights/': '/blog',
@@ -365,9 +371,7 @@ body,html{max-width:100%;overflow-x:clip}
  * To refresh: re-run scripts/extract-footer.ts and commit the updated src/data/footer-home.html.
  */
 function buildCustomFooter(): string {
-  const { readFileSync } = require('fs') as typeof import('fs');
-  const path = require('path') as typeof import('path');
-  return readFileSync(path.join(process.cwd(), 'src/data/footer-home.html'), 'utf-8');
+  return CUSTOM_FOOTER_HTML;
 }
 
 /**
