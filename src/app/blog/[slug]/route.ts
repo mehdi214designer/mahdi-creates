@@ -117,7 +117,9 @@ const ARTICLE_CSS = `<style>
 button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
 .mc-share-btn:hover{border-color:rgba(255,255,255,.35);color:#fff}
 .mc-a-body img{max-width:100%;height:auto;border-radius:10px}
-.mc-a-body iframe,.mc-a-body video{max-width:100%;border-radius:10px;display:block}
+.mc-a-body iframe{max-width:100%;display:block}
+.mc-a-body video{max-width:100%;height:auto;max-height:70vh;display:block;margin:0 auto;border-radius:10px;object-fit:contain}
+.mc-a-body .wp-block-video{margin:32px 0}
 .mc-a-body .wp-block-embed{margin:32px 0;max-width:100%;overflow:hidden}
 .mc-a-body .wp-block-embed__wrapper{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px}
 .mc-a-body .wp-block-embed__wrapper iframe{position:absolute;top:0;left:0;width:100%!important;height:100%!important;border-radius:12px}
