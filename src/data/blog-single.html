@@ -318,9 +318,14 @@ html,body{overflow-x:hidden;max-width:100%}
 .framer-1mfzobr>.framer-1iujvq3,
 .framer-1mfzobr>.framer-1vnp7xv{display:none!important}
 
+/* Framer's mobile variant classes set fixed widths on section components independently
+   of the page root — phones narrower than 390px (common 360px Android) clip content. */
+.framer-7FVA4.framer-v-1muf1nr.framer-19xfg6h{width:100%!important;max-width:100vw!important}
+.framer-I118U.framer-1tiq8k9{width:100%!important;max-width:100vw!important}
+
 @media(max-width:809.98px){
-  /* Framer hard-codes width:390px for mobile — override to fill any screen width */
-  .framer-4bykK.framer-1es992z{width:100%!important}
+  /* Framer hard-codes width:390px for mobile on page root — override to fill screen */
+  .framer-4bykK.framer-1es992z{width:100%!important;max-width:100vw!important}
   .mc-blog-wrap{padding:40px 20px 64px;box-sizing:border-box}
 }
 .mc-hero{padding:56px 0 48px;text-align:center;}

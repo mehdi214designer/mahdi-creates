@@ -365,7 +365,10 @@ const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nl
 
 // Framer hard-codes width:390px on the root div for mobile (<810px), making content
 // left-aligned with blank space on any device wider than an iPhone 14 Pro.
-const MOBILE_FIX_CSS = `<style>html,body{overflow-x:hidden;max-width:100%}@media(max-width:809.98px){[data-framer-root]{width:100%!important}}</style>`;
+// Framer hard-codes width:390px on the page root AND on each section component's mobile
+// variant class (e.g. framer-v-1muf1nr) — both must be set to 100% so any viewport
+// narrower than 390px (common 360px Android phones) doesn't clip content.
+const MOBILE_FIX_CSS = `<style>html,body{overflow-x:hidden;max-width:100vw}@media(max-width:809.98px){[data-framer-root]{width:100%!important;max-width:100vw!important}.framer-v-1muf1nr{width:100%!important;max-width:100vw!important}}</style><script>(function(){function fix(){if(window.innerWidth>810)return;var root=document.querySelector('[data-framer-root]');if(!root)return;root.style.setProperty('width','100%','important');root.style.setProperty('max-width','100vw','important');var vw=window.innerWidth;Array.from(root.children).forEach(function(c){if((c.scrollWidth||c.offsetWidth)>vw+1&&getComputedStyle(c).position!=='absolute'){c.style.setProperty('width','100%','important');c.style.setProperty('max-width','100vw','important');c.style.setProperty('overflow-x','hidden','important');}});}document.addEventListener('DOMContentLoaded',function(){[0,250,700,1800].forEach(function(d){setTimeout(fix,d)});});}());</script>`;
 
 const SITE_META = `<meta property="og:site_name" content="Mahdi Creates">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mahdi Creates","url":"https://www.mahdicreates.com","author":{"@type":"Person","name":"Md Mahdi Hasan","url":"https://www.mahdicreates.com/about"}}</script>`;
