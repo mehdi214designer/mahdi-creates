@@ -339,7 +339,7 @@ function buildRelated(resources: WPResource[]): string {
   }).join('\n');
 
   return `<!-- MC_RELATED_START -->
-    <div class="mc-grid" style="grid-template-columns:repeat(3,1fr);">
+    <div class="mc-grid">
 ${cards}
     </div>
 <!-- MC_RELATED_END -->`;
@@ -456,6 +456,7 @@ export async function GET(
           /<!-- MC_RELATED_START -->[\s\S]*?<!-- MC_RELATED_END -->/,
           buildRelated(related)
         );
+        html = html.replace('>More Articles<', '>More Resources<');
       }
     }
   } catch {
