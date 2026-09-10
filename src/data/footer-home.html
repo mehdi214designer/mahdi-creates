@@ -6,10 +6,11 @@
 /* Root wrapper */
 #mc-footer-live{background:#0f0f0f;overflow:hidden;width:100%}
 
-/* Override fixed widths to 100% so footer spans full page */
-#mc-footer-live .framer-N2qEu.framer-19xfg6h,
-#mc-footer-live .framer-N2qEu.framer-v-1muf1nr.framer-19xfg6h,
-#mc-footer-live .framer-N2qEu.framer-v-1e56kch.framer-19xfg6h{width:100%!important}
+/* Override fixed widths/heights — inline style="height:100%" collapses without a parent height;
+   !important beats inline styles, restoring the Framer component's own pixel dimensions */
+#mc-footer-live .framer-N2qEu.framer-19xfg6h{width:100%!important;height:902px!important}
+#mc-footer-live .framer-N2qEu.framer-v-1e56kch.framer-19xfg6h{width:100%!important;height:870px!important}
+#mc-footer-live .framer-N2qEu.framer-v-1muf1nr.framer-19xfg6h{width:100%!important;height:1335px!important}
 
 /* Hide the nav that Framer embeds inside the footer component */
 #mc-footer-live .framer-nmp17j{display:none!important}
