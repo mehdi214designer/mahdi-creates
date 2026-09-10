@@ -363,6 +363,10 @@ body,html{max-width:100%;overflow-x:clip}
  */
 const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" /><meta name="p:domain_verify" content="29c1a90992a1114b7055c15920f1a312" />`;
 
+// Framer hard-codes width:390px on the root div for mobile (<810px), making content
+// left-aligned with blank space on any device wider than an iPhone 14 Pro.
+const MOBILE_FIX_CSS = `<style>html,body{overflow-x:hidden;max-width:100%}@media(max-width:809.98px){[data-framer-root]{width:100%!important}}</style>`;
+
 const SITE_META = `<meta property="og:site_name" content="Mahdi Creates">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mahdi Creates","url":"https://www.mahdicreates.com","author":{"@type":"Person","name":"Md Mahdi Hasan","url":"https://www.mahdicreates.com/about"}}</script>`;
 
@@ -425,7 +429,7 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
   });
 
   const siteMeta = html.includes('og:site_name') ? '' : SITE_META;
-  html = html.replace('</head>', SITEKIT_META + siteMeta + '</head>');
+  html = html.replace('</head>', SITEKIT_META + siteMeta + MOBILE_FIX_CSS + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + '</body>');
 }
 
