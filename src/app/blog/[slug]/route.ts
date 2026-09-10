@@ -117,6 +117,10 @@ const ARTICLE_CSS = `<style>
 button.mc-share-btn{font:500 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
 .mc-share-btn:hover{border-color:rgba(255,255,255,.35);color:#fff}
 .mc-a-body img{max-width:100%;height:auto;border-radius:10px}
+.mc-a-body iframe,.mc-a-body video{max-width:100%;border-radius:10px;display:block}
+.mc-a-body .wp-block-embed{margin:32px 0;max-width:100%;overflow:hidden}
+.mc-a-body .wp-block-embed__wrapper{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px}
+.mc-a-body .wp-block-embed__wrapper iframe{position:absolute;top:0;left:0;width:100%!important;height:100%!important;border-radius:12px}
 .mc-a-body figure{margin:32px 0}
 .mc-a-body figure img{width:100%;border-radius:12px}
 .mc-a-body figcaption{text-align:center;font-size:12px;color:rgba(255,255,255,.35);margin-top:8px}
