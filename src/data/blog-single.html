@@ -327,6 +327,13 @@ html,body{overflow-x:hidden;max-width:100%}
   /* Framer hard-codes width:390px for mobile on page root — override to fill screen */
   .framer-4bykK.framer-1es992z{width:100%!important;max-width:100vw!important}
   .mc-blog-wrap{padding:40px 20px 64px;box-sizing:border-box}
+  /* framer-8a8ci8 = newsletter/social footer section; position:absolute with overflow:hidden
+     and a 2-column row layout (373px + 351px) clips text on narrow viewports.
+     Switch to single column with overflow visible. */
+  .framer-7FVA4 .framer-8a8ci8{overflow:visible!important}
+  .framer-7FVA4 .framer-5doyxi{flex-direction:column!important;height:auto!important;gap:24px!important;align-items:flex-start!important}
+  .framer-7FVA4 .framer-167lep6,.framer-7FVA4 .framer-wzubi0-container{width:100%!important}
+  .framer-7FVA4 .framer-1a9juyc,.framer-7FVA4 .framer-1yj0du7{width:100%!important;max-width:100%!important}
 }
 .mc-hero{padding:56px 0 48px;text-align:center;}
 .mc-hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:50px;

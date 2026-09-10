@@ -363,12 +363,12 @@ body,html{max-width:100%;overflow-x:clip}
  */
 const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" /><meta name="p:domain_verify" content="29c1a90992a1114b7055c15920f1a312" />`;
 
-// Framer hard-codes width:390px on the root div for mobile (<810px), making content
-// left-aligned with blank space on any device wider than an iPhone 14 Pro.
-// Framer hard-codes width:390px on the page root AND on each section component's mobile
-// variant class (e.g. framer-v-1muf1nr) — both must be set to 100% so any viewport
-// narrower than 390px (common 360px Android phones) doesn't clip content.
-const MOBILE_FIX_CSS = `<style>html,body{overflow-x:hidden;max-width:100vw}@media(max-width:809.98px){[data-framer-root]{width:100%!important;max-width:100vw!important}.framer-v-1muf1nr{width:100%!important;max-width:100vw!important}}</style><script>(function(){function fix(){if(window.innerWidth>810)return;var root=document.querySelector('[data-framer-root]');if(!root)return;root.style.setProperty('width','100%','important');root.style.setProperty('max-width','100vw','important');var vw=window.innerWidth;Array.from(root.children).forEach(function(c){if((c.scrollWidth||c.offsetWidth)>vw+1&&getComputedStyle(c).position!=='absolute'){c.style.setProperty('width','100%','important');c.style.setProperty('max-width','100vw','important');c.style.setProperty('overflow-x','hidden','important');}});}document.addEventListener('DOMContentLoaded',function(){[0,250,700,1800].forEach(function(d){setTimeout(fix,d)});});}());</script>`;
+// Framer hard-codes width:390px on the page root AND on section component mobile variant
+// classes. On phones narrower than 390px (e.g. 360px Android), these overflow and get
+// clipped by overflow:clip on the root. framer-8a8ci8 is the footer newsletter/social
+// section — it uses position:absolute with overflow:hidden and a 2-column row layout that
+// clips text on mobile. We switch it to a single column with overflow visible.
+const MOBILE_FIX_CSS = `<style>html,body{overflow-x:hidden;max-width:100vw}@media(max-width:809.98px){[data-framer-root]{width:100%!important;max-width:100vw!important}.framer-v-1muf1nr{width:100%!important;max-width:100vw!important}.framer-7FVA4 .framer-8a8ci8{overflow:visible!important}.framer-7FVA4 .framer-5doyxi{flex-direction:column!important;height:auto!important;gap:24px!important;align-items:flex-start!important}.framer-7FVA4 .framer-167lep6,.framer-7FVA4 .framer-wzubi0-container{width:100%!important}.framer-7FVA4 .framer-1a9juyc,.framer-7FVA4 .framer-1yj0du7{width:100%!important;max-width:100%!important}}</style><script>(function(){function fix(){if(window.innerWidth>810)return;var root=document.querySelector('[data-framer-root]');if(!root)return;root.style.setProperty('width','100%','important');root.style.setProperty('max-width','100vw','important');var vw=window.innerWidth;Array.from(root.children).forEach(function(c){if((c.scrollWidth||c.offsetWidth)>vw+1&&getComputedStyle(c).position!=='absolute'){c.style.setProperty('width','100%','important');c.style.setProperty('max-width','100vw','important');c.style.setProperty('overflow-x','hidden','important');}});}document.addEventListener('DOMContentLoaded',function(){[0,250,700,1800].forEach(function(d){setTimeout(fix,d)});});}());</script>`;
 
 const SITE_META = `<meta property="og:site_name" content="Mahdi Creates">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mahdi Creates","url":"https://www.mahdicreates.com","author":{"@type":"Person","name":"Md Mahdi Hasan","url":"https://www.mahdicreates.com/about"}}</script>`;
