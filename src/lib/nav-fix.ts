@@ -379,8 +379,9 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
   html = html.replace(/<!--\s*Made in Framer[^>]*-->/g, '');
   // Strip generator meta tag — Google reads this and knows the site is built with Framer
   html = html.replace(/<meta\s+name="generator"\s+content="Framer[^"]*"\s*\/?>/gi, '');
-  // Strip Framer editor bar preload script (was using wrong method name — getItem not get)
+  // Strip Framer editor bar preload script — two variants exist across different page templates
   html = html.replace(/<script>try\{if\(localStorage\.getItem\("__framer_force_showing_editorbar_since"\)[\s\S]*?<\/script>/, '');
+  html = html.replace(/<script>try\{if\(localStorage\.get\("__framer_force_showing_editorbar_since"\)[\s\S]*?<\/script>/, '');
   // Strip Framer analytics script (sends pageview data to events.framer.com)
   html = html.replace(/<script[^>]*src="https:\/\/events\.framer\.com[^"]*"[^>]*><\/script>/g, '');
   // Strip Framer search index meta tags (framerusercontent.com references)
