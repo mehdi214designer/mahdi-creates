@@ -15,6 +15,10 @@
 /* Reset Framer appear-animation initial states (opacity:0.001, transform offsets) */
 #mc-footer-live [data-framer-appear-id]{opacity:1!important;transform:none!important}
 
+/* Newsletter iframe: Framer normally resizes via postMessage JS, which doesn't run here.
+   The iframe container is ~373px wide → form stacks input/button → ~180px tall. */
+#mc-footer-live .framer-1wd7hbc-container iframe{height:180px!important}
+
 /* Tablet/mobile: center the CTA image + text column */
 @media(max-width:1439px){
   #mc-footer-live .framer-tactar{flex-direction:column;align-items:center;text-align:center}
