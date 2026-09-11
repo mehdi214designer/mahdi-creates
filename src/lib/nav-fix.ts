@@ -402,6 +402,9 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
   html = html.replace(/<!--\s*Made in Framer[^>]*-->/g, '');
   // Strip generator meta tag — Google reads this and knows the site is built with Framer
   html = html.replace(/<meta\s+name="generator"\s+content="Framer[^"]*"\s*\/?>/gi, '');
+  // Replace any robots meta from Framer (e.g. noindex from toggling off Search Engines)
+  // with the correct indexable directive for our domain.
+  html = html.replace(/<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/gi, '<meta name="robots" content="index, follow, max-image-preview:large">');
   // Strip Framer editor bar preload script — two variants exist across different page templates
   html = html.replace(/<script>try\{if\(localStorage\.getItem\("__framer_force_showing_editorbar_since"\)[\s\S]*?<\/script>/, '');
   html = html.replace(/<script>try\{if\(localStorage\.get\("__framer_force_showing_editorbar_since"\)[\s\S]*?<\/script>/, '');
