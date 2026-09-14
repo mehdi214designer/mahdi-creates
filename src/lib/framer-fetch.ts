@@ -54,11 +54,8 @@ function fixCanonical(html: string, nextPath: string): string {
     .replace(/<meta\s+name=["']framer-search-index[^"']*["'][^>]*>/gi, '')
     // Fix og:url — Framer sets this to mahdicreates.framer.ai
     .replace(/<meta property="og:url"[^>]*>/gi, `<meta property="og:url" content="${canonical}">`)
-    // Add index/follow to robots meta if not already present
-    .replace(/<meta\s+name=["']robots["'][^>]*content=["']([^"']*)["'][^>]*>/gi, (tag, content) => {
-      if (/\b(no)?index\b/i.test(content)) return tag; // already has indexing directive
-      return tag.replace(/content=["'][^"']*["']/, `content="index, follow, ${content}"`);
-    })
+    // Always enforce index/follow — Framer may inject noindex when "Search Engines" is toggled off
+    .replace(/<meta\s+name=["']robots["'][^>]*>/gi, '<meta name="robots" content="index, follow, max-image-preview:large">')
     // Inject canonical + SEO additions into <head>
     .replace('</head>',
       `<link rel="canonical" href="${canonical}">\n` +
