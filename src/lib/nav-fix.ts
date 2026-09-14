@@ -410,6 +410,8 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
   html = html.replace(/<script>try\{if\(localStorage\.get\("__framer_force_showing_editorbar_since"\)[\s\S]*?<\/script>/, '');
   // Strip Framer analytics script (sends pageview data to events.framer.com)
   html = html.replace(/<script[^>]*src="https:\/\/events\.framer\.com[^"]*"[^>]*><\/script>/g, '');
+  // Strip Framer-injected Clarity script — it initialises window.clarity first and blocks ours (xqlc4wvdns)
+  html = html.replace(/<script[^>]*>\s*\(function\(c,l,a,r,i,t,y\)[\s\S]*?clarity\.ms\/tag[\s\S]*?<\/script>/gi, '');
   // Strip Framer search index meta tags (framerusercontent.com references)
   html = html.replace(/<meta\s+name="framer-search-index[^"]*"[^>]*\/?>/gi, '');
   // Replace Framer-CDN favicons with self-hosted ones
