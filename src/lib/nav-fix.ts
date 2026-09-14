@@ -241,6 +241,8 @@ const GA4_SCRIPT = `<script async src="https://www.googletagmanager.com/gtag/js?
 
 const CLARITY_SCRIPT = `<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","xqlc4wvdns");</script>`;
 
+const RB2B_SCRIPT = `<script>!function(key){if(window.reb2b)return;window.reb2b={loaded:true};var s=document.createElement("script");s.async=true;s.src="https://ddwl4m2hdecbv.cloudfront.net/b/"+key+"/"+key+".js.gz";document.getElementsByTagName("script")[0].parentNode.insertBefore(s,document.getElementsByTagName("script")[0]);}("0NW1GHJWDRO4");</script>`;
+
 function buildA11yScript(): string {
   return `<script>
 (function(){
@@ -454,7 +456,7 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
 
   const siteMeta = html.includes('og:site_name') ? '' : SITE_META;
   html = html.replace('</head>', SITEKIT_META + siteMeta + MOBILE_FIX_CSS + '</head>');
-  return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + customFooter + '</body>');
+  return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + RB2B_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + customFooter + '</body>');
 }
 
 /** Return a styled 404 Response using the Framer 404 page snapshot */
