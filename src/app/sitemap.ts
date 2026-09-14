@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 const BASE = 'https://www.mahdicreates.com';
 
 const STATIC_PAGES: MetadataRoute.Sitemap = [
-  { url: BASE, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+  { url: `${BASE}/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
   { url: `${BASE}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
   { url: `${BASE}/case-studies`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: `${BASE}/projects`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
