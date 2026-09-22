@@ -60,25 +60,24 @@ function buildGrid(posts: WPPost[]): string {
 
   const hasMore = posts.length > INITIAL_VISIBLE;
   const loadMore = hasMore ? `
-  <div id="mc-load-more-wrap" style="text-align:center;margin-top:48px">
-    <button id="mc-load-more" style="background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.75);font-family:inherit;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;padding:14px 36px;cursor:pointer;border-radius:4px;transition:border-color 0.2s,color 0.2s" onmouseover="this.style.borderColor='#ff6522';this.style.color='#ff6522'" onmouseout="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='rgba(255,255,255,0.75)'">Load More Articles</button>
-  </div>
+  <div id="mc-scroll-sentinel" style="height:1px;margin-top:80px"></div>
   <style>.mc-card-hidden{display:none!important}</style>
   <script>
   (function(){
-    var btn=document.getElementById('mc-load-more');
-    if(!btn)return;
-    var shown=${INITIAL_VISIBLE};
+    var sentinel=document.getElementById('mc-scroll-sentinel');
+    if(!sentinel||!window.IntersectionObserver)return;
     var batch=6;
-    btn.addEventListener('click',function(){
+    var obs=new IntersectionObserver(function(entries){
+      if(!entries[0].isIntersecting)return;
       var hidden=document.querySelectorAll('.mc-card-hidden');
       var toShow=Array.prototype.slice.call(hidden,0,batch);
       toShow.forEach(function(el){el.classList.remove('mc-card-hidden')});
-      shown+=toShow.length;
       if(document.querySelectorAll('.mc-card-hidden').length===0){
-        document.getElementById('mc-load-more-wrap').style.display='none';
+        obs.disconnect();
+        sentinel.remove();
       }
-    });
+    },{rootMargin:'200px'});
+    obs.observe(sentinel);
   })();
   </script>` : '';
 
