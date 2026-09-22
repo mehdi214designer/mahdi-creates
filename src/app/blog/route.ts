@@ -37,6 +37,8 @@ function proxyUrl(url: string): string {
   return url;
 }
 
+const INITIAL_VISIBLE = 6;
+
 function buildGrid(posts: WPPost[]): string {
   const delays = [0, 60, 120, 0, 60, 120];
   const cards = posts.map((post, i) => {
@@ -44,7 +46,8 @@ function buildGrid(posts: WPPost[]): string {
     const src = proxyUrl(img?.source_url ?? buildPlaceholderImg(post.title.rendered));
     const alt = img?.alt_text || post.title.rendered;
     const delay = delays[i % delays.length];
-    return `    <a href="/blog/${post.slug}" class="mc-card" data-mc-appear="mc-fade-up" data-mc-delay="${delay}">
+    const hidden = i >= INITIAL_VISIBLE ? ' mc-card-hidden' : '';
+    return `    <a href="/blog/${post.slug}" class="mc-card${hidden}" data-mc-appear="mc-fade-up" data-mc-delay="${delay}">
       <div class="mc-img-wrap"><img class="mc-img" src="${src}" alt="${alt}" loading="lazy"></div>
       <div class="mc-card-date">${formatDate(post.date)}</div>
       <div class="mc-card-title">${post.title.rendered}</div>
@@ -55,7 +58,31 @@ function buildGrid(posts: WPPost[]): string {
     <p style="font-size:17px;line-height:1.75;color:rgba(255,255,255,0.5)">Articles on visual hierarchy, UX history, copywriting, design systems, and the real craft behind great digital products — written for designers and builders who think deeply.</p>
   </div>`;
 
-  return `<!-- MC_BLOG_GRID_START -->\n${intro}\n  <div class="mc-grid">\n${cards}\n  </div>\n<!-- MC_BLOG_GRID_END -->`;
+  const hasMore = posts.length > INITIAL_VISIBLE;
+  const loadMore = hasMore ? `
+  <div id="mc-load-more-wrap" style="text-align:center;margin-top:48px">
+    <button id="mc-load-more" style="background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.75);font-family:inherit;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;padding:14px 36px;cursor:pointer;border-radius:4px;transition:border-color 0.2s,color 0.2s" onmouseover="this.style.borderColor='#ff6522';this.style.color='#ff6522'" onmouseout="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='rgba(255,255,255,0.75)'">Load More Articles</button>
+  </div>
+  <style>.mc-card-hidden{display:none!important}</style>
+  <script>
+  (function(){
+    var btn=document.getElementById('mc-load-more');
+    if(!btn)return;
+    var shown=${INITIAL_VISIBLE};
+    var batch=6;
+    btn.addEventListener('click',function(){
+      var hidden=document.querySelectorAll('.mc-card-hidden');
+      var toShow=Array.prototype.slice.call(hidden,0,batch);
+      toShow.forEach(function(el){el.classList.remove('mc-card-hidden')});
+      shown+=toShow.length;
+      if(document.querySelectorAll('.mc-card-hidden').length===0){
+        document.getElementById('mc-load-more-wrap').style.display='none';
+      }
+    });
+  })();
+  </script>` : '';
+
+  return `<!-- MC_BLOG_GRID_START -->\n${intro}\n  <div class="mc-grid">\n${cards}\n  </div>\n${loadMore}\n<!-- MC_BLOG_GRID_END -->`;
 }
 
 export const dynamic = 'force-dynamic';
@@ -83,7 +110,7 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      `${WP_API}/posts?per_page=12&_embed=wp:featuredmedia&_fields=id,slug,date,title,excerpt,featured_media,_links`,
+      `${WP_API}/posts?per_page=100&_embed=wp:featuredmedia&_fields=id,slug,date,title,excerpt,featured_media,_links`,
       { cache: 'no-store' }
     );
 
