@@ -383,10 +383,35 @@ function buildCustomFooter(): string {
  */
 const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" /><meta name="p:domain_verify" content="29c1a90992a1114b7055c15920f1a312" />`;
 
-// Framer's React hydration re-injects <meta name="robots" content="noindex"> from its
-// component state, overriding our server-side replacement. This MutationObserver runs in
-// <head> before any body scripts, watches for the re-injection, and immediately reverts it.
-const ROBOTS_GUARD = `<script>(function(){var T='index, follow, max-image-preview:large';function fix(m){if(m&&m.getAttribute('content')!==T)m.setAttribute('content',T);}fix(document.querySelector('meta[name="robots"]'));if(typeof MutationObserver!=='undefined'){new MutationObserver(function(ms){ms.forEach(function(mu){if(mu.type==='attributes'&&mu.target.tagName==='META'&&mu.target.getAttribute('name')==='robots'){fix(mu.target);}mu.addedNodes.forEach(function(n){if(n.nodeType===1&&n.tagName==='META'&&n.getAttribute('name')==='robots')fix(n);});});}).observe(document.head,{childList:true,subtree:true,attributes:true,attributeFilter:['content','name']});}})();</script>`;
+// Framer's React hydration re-injects <meta name="robots" content="noindex"> and
+// <meta name="generator" content="Framer ..."> from its component state, and also
+// restores the Framer badge div. This MutationObserver guard runs in <head> before
+// any body scripts and immediately reverts/removes those re-injections.
+const ROBOTS_GUARD = `<script>(function(){
+var ROBOTS='index, follow, max-image-preview:large';
+function fixRobots(m){if(m&&m.getAttribute('content')!==ROBOTS)m.setAttribute('content',ROBOTS);}
+function purge(n){
+  if(n.nodeType!==1)return;
+  var name=n.getAttribute&&n.getAttribute('name');
+  if(n.tagName==='META'&&name==='robots'){fixRobots(n);return;}
+  if(n.tagName==='META'&&name==='generator'&&/framer/i.test(n.getAttribute('content')||'')){n.remove();return;}
+  if(n.id==='__framer-badge-container'){n.remove();return;}
+  if(n.tagName==='A'&&/framer\.com/i.test(n.getAttribute('href')||'')&&!n.closest('#mc-m-nav')){n.remove();}
+}
+fixRobots(document.querySelector('meta[name="robots"]'));
+var gen=document.querySelector('meta[name="generator"]');
+if(gen&&/framer/i.test(gen.getAttribute('content')||''))gen.remove();
+var badge=document.getElementById('__framer-badge-container');
+if(badge)badge.remove();
+if(typeof MutationObserver!=='undefined'){
+  new MutationObserver(function(ms){
+    ms.forEach(function(mu){
+      if(mu.type==='attributes'){purge(mu.target);}
+      mu.addedNodes.forEach(purge);
+    });
+  }).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['content','name','href']});
+}
+})();</script>`;
 
 // Framer hard-codes width:390px on the page root for mobile — phones narrower than 390px
 // (e.g. 360px Android) overflow and get clipped by overflow:clip on the root.
