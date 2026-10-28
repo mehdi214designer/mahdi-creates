@@ -383,6 +383,11 @@ function buildCustomFooter(): string {
  */
 const SITEKIT_META = `<meta name="googlesitekit-setup" content="sitekit-EhIKB1Nlc3Npb24QgIDA6ZKo5Qk" /><meta name="p:domain_verify" content="29c1a90992a1114b7055c15920f1a312" />`;
 
+// Framer's React hydration re-injects <meta name="robots" content="noindex"> from its
+// component state, overriding our server-side replacement. This MutationObserver runs in
+// <head> before any body scripts, watches for the re-injection, and immediately reverts it.
+const ROBOTS_GUARD = `<script>(function(){var T='index, follow, max-image-preview:large';function fix(m){if(m&&m.getAttribute('content')!==T)m.setAttribute('content',T);}fix(document.querySelector('meta[name="robots"]'));if(typeof MutationObserver!=='undefined'){new MutationObserver(function(ms){ms.forEach(function(mu){if(mu.type==='attributes'&&mu.target.tagName==='META'&&mu.target.getAttribute('name')==='robots'){fix(mu.target);}mu.addedNodes.forEach(function(n){if(n.nodeType===1&&n.tagName==='META'&&n.getAttribute('name')==='robots')fix(n);});});}).observe(document.head,{childList:true,subtree:true,attributes:true,attributeFilter:['content','name']});}})();</script>`;
+
 // Framer hard-codes width:390px on the page root for mobile — phones narrower than 390px
 // (e.g. 360px Android) overflow and get clipped by overflow:clip on the root.
 const MOBILE_FIX_CSS = `<style>html,body{overflow-x:hidden;max-width:100vw}</style><script>(function(){function fix(){if(window.innerWidth>810)return;var root=document.querySelector('[data-framer-root]');if(!root)return;root.style.setProperty('width','100%','important');root.style.setProperty('max-width','100vw','important');var vw=window.innerWidth;Array.from(root.children).forEach(function(c){if((c.scrollWidth||c.offsetWidth)>vw+1&&getComputedStyle(c).position!=='absolute'){c.style.setProperty('width','100%','important');c.style.setProperty('max-width','100vw','important');c.style.setProperty('overflow-x','hidden','important');}});}document.addEventListener('DOMContentLoaded',function(){[0,250,700,1800].forEach(function(d){setTimeout(fix,d)});});}());</script>`;
@@ -455,7 +460,7 @@ export function applyNavFix(html: string, opts: { mobileNav?: boolean; canonical
   });
 
   const siteMeta = html.includes('og:site_name') ? '' : SITE_META;
-  html = html.replace('</head>', SITEKIT_META + siteMeta + MOBILE_FIX_CSS + '</head>');
+  html = html.replace('</head>', SITEKIT_META + siteMeta + MOBILE_FIX_CSS + ROBOTS_GUARD + '</head>');
   return html.replace('</body>', GA4_SCRIPT + CLARITY_SCRIPT + RB2B_SCRIPT + buildA11yScript() + NAV_FIX_SCRIPT + buildNavInjectScript() + BADGE_HIDE + mobileNav + always + customFooter + '</body>');
 }
 
